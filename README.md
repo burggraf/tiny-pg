@@ -60,7 +60,7 @@ To see this in action, just run `./local-cluster.sh`.  This script will:
 1. Create a primary server running on port 5011. (default password: `password`)
 2. Create two secondary servers running on ports 5012 and 5013.
 
-### See it work
+### See it work (see: `./local-cluster-test.sh`)
 1. Connect to the primary server `PGPASSWORD=password psql -U postres -h localhost -p 5011`
 2. Create a table `create table people (id serial primary key, name text);`
 3. Add some data `insert into people (name) values ('Adam'),('Betty'),('Charles');`
@@ -74,3 +74,7 @@ To see this in action, just run `./local-cluster.sh`.  This script will:
 12. Exit the primary server `\q`
 13. Connect to a secondary server `PGPASSWORD=password psql -U postres -h localhost -p 5012`
 14. See the changed schema and data has been replicated `select * from people;`
+
+## Promoting a Secondary Server
+To promote the `postgres-5012` server running on port `5012`:
+`docker exec -it postgres-5012 /bin/sh -c "su postgres -c 'pg_ctl promote -D /var/lib/postgresql/data/'"`
