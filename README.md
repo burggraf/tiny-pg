@@ -21,6 +21,7 @@ Works on:
 ### Primary Server
 - choose a port for your server (i.e. 5001)
 - create a file of environment variables named `<port>.env`, (i.e. 5001.env)
+
 Sample env file (5001.env):
 ```sh
 HOST_TYPE=PRIMARY
@@ -32,6 +33,7 @@ POSTGRES_PASSWORD=MySecretPostgresUserPassword
 ### Secondary (Replica) Server
 - choose a port for your server (i.e. 5002)
 - create a file of environment variables named `<port>.env`, (i.e. 5002.env)
+
 Sample env file (5002.env):
 ```sh
 HOST_TYPE=SECONDARY
