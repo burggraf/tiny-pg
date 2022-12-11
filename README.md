@@ -50,3 +50,7 @@ HOST_PORT=5001
 - Limited extensions installed: only `plpgsql` is loaded in the PostgreSQL server.
 - For security reasons you may want to edit or remove the `.env` file(s) after the container is running.
 - `HOST_IP` can be an ip address (i.e. `1.2.3.4`) or a domain name (i.e. `myserver.host.com`)
+
+By default, `alpine-postgres.sh` starts in "interactive mode".  This starts the PostgreSQL server and launches a `psql` command-line shell inside the container.  You can exit `psql` with `\q` and interact with the container.  Just type `exit` to leave the container (it will continue to run).
+
+If you don't need or want to interact with the server, run `alpine-postgres-detached.sh` which just starts the server and exits immmediately.
