@@ -1,7 +1,22 @@
-# alpine-postgres
-Quickly spin up a PostgreSQL server with a small footprint (~50mb) with asynchronous replication
+# alpine-postgres: Setup PostgreSQL HA (High Availability) in Under 60 Seconds
+Quickly spin up a PostgreSQL server with a **small footprint** (~50mb) running **asynchronous streaming replication**.
 
-## Quick Start (MacOS arm64, MacOS amd64, Linux arm64, Linux amd64)
+## Features
+- Primary (write) server running the latest PostgreSQL (currently 15.1)
+- Secondary (read-only, hot backup) server(s) running the latest PostgreSQL (currently 15.1)
+- Data stored as a persistent **Docker Volume**
+- Easy to run multiple, separate servers on different ports
+
+# Requirements
+- Docker command line installed (`docker -v` should return the current docker version, i.e. 20.10.16)
+- MacOS or Linux running amd64 or arm64 architecture (not tested on Windows but may work fine)
+
+## Quick Start
+Works on:
+- MacOS arm64
+- MacOS amd64
+- Linux arm64
+- Linux amd64
 
 ### Primary Server
 - choose a port for your server (i.e. 5001)
