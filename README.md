@@ -54,3 +54,23 @@ HOST_PORT=5001
 By default, `alpine-postgres.sh` starts in "interactive mode".  This starts the PostgreSQL server and launches a `psql` command-line shell inside the container.  You can exit `psql` with `\q` and interact with the container.  Just type `exit` to leave the container (it will continue to run).
 
 If you don't need or want to interact with the server, run `alpine-postgres-detached.sh` which just starts the server and exits immmediately.
+
+## Local Demo
+To see this in action, just run `./local-cluster.sh`.  This script will:
+1. Create a primary server running on port 5011. (default password: `password`)
+2. Create two secondary servers running on ports 5012 and 5013.
+
+### See it work
+1. Connect to the primary server `PGPASSWORD=password psql -U postres -h localhost -p 5011`
+2. Create a table `create table people (id serial primary key, name text);`
+3. Add some data `insert into people (name) values ('Adam'),('Betty'),('Charles');`
+4. Exit the primary server `\q`
+5. Connect to a secondary server `PGPASSWORD=password psql -U postres -h localhost -p 5012`
+6. View the data that's already been replicated `select * from people;`
+7. Exit the second server `\q`
+8. Connect to the primary server `PGPASSWORD=password psql -U postres -h localhost -p 5011`
+9. Modify the schema `alter table people add column age numeric;`
+10. Change the data `update people set age = 22 where name = 'Charles';`
+12. Exit the primary server `\q`
+13. Connect to a secondary server `PGPASSWORD=password psql -U postres -h localhost -p 5012`
+14. See the changed schema and data has been replicated `select * from people;`
