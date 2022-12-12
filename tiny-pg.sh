@@ -8,6 +8,11 @@ if [ -n "$1" ] && [ "$1" -eq "$1" ] 2>/dev/null; then
     echo ""
     read -p "Is this a primary server? (y/n): " PRIMARY
     echo ""
+    if [[ ! "$PRIMARY" = "y" ]] && [[ ! "$PRIMARY" = "n" ]]; then
+      echo "Invalid input. Please enter 'y' or 'n'."
+      echo "Aborting..."
+      exit 1
+    fi
     read -p "Enter a password for the postgres user: " POSTGRES_PASSWORD
     read -p "Enter a password for the replication user (repuser): " REPUSER_PASSWORD
     if [[ "$PRIMARY" = "y" ]] || [[ "$PRIMARY" = "Y" ]]; then
