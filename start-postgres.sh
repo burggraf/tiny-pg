@@ -49,15 +49,18 @@ else
             echo "***********************************************************"
             PGPASSWORD="$REPUSER_PASSWORD" pg_basebackup -R -h $HOST_IP -p $HOST_PORT -U repuser -D /var/lib/postgresql/data -P
             echo "host all all 0.0.0.0/0 md5" >> /var/lib/postgresql/data/pg_hba.conf
-            #echo "host replication repuser 0.0.0.0/0 md5" >> /var/lib/postgresql/data/pg_hba.conf
             echo "hot_standby=on" >> /var/lib/postgresql/data/postgresql.conf
             echo "listen_addresses='*'" >> /var/lib/postgresql/data/postgresql.conf
             echo "primary_conninfo='host=$HOST_IP port=$HOST_PORT user=repuser'" >> /var/lib/postgresql/data/postgresql.conf
-            # echo "wal_level = replica" >> /var/lib/postgresql/data/postgresql.conf
-            # echo "max_wal_senders = 10" >> /var/lib/postgresql/data/postgresql.conf
-            # echo "wal_keep_size = 32" >> /var/lib/postgresql/data/postgresql.conf
-            # echo "synchronous_commit = remote_apply" >> /var/lib/postgresql/data/postgresql.conf
-            # echo "synchronous_standby_names = '*'" >> /var/lib/postgresql/data/postgresql.conf
+
+            # these are not needed for a primary in case we get promoted later
+            echo "host replication repuser 0.0.0.0/0 md5" >> /var/lib/postgresql/data/pg_hba.conf
+            echo "wal_level = replica" >> /var/lib/postgresql/data/postgresql.conf
+            echo "max_wal_senders = 10" >> /var/lib/postgresql/data/postgresql.conf
+            echo "wal_keep_size = 32" >> /var/lib/postgresql/data/postgresql.conf
+            echo "synchronous_commit = off" >> /var/lib/postgresql/data/postgresql.conf
+            echo "synchronous_standby_names = '*'" >> /var/lib/postgresql/data/postgresql.conf
+
             chown -R postgres:postgres /var/lib/postgresql/data
             chmod 0700 /var/lib/postgresql/data
             # start postgresql
