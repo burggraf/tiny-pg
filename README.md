@@ -6,6 +6,7 @@ Quickly spin up a PostgreSQL server with a **small footprint** (~50mb) running *
 - Secondary (read-only, hot backup) server(s) running the latest PostgreSQL (currently 15.1)
 - Data stored as a persistent **Docker Volume**
 - Easy to run multiple, separate servers on different ports
+- Option to install PostgreSQL extensions as needed.
 
 # Requirements
 - Docker command line installed (`docker -v` should return the current docker version, i.e. 20.10.16)
