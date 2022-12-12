@@ -1,4 +1,4 @@
-# alpine-postgres: Setup PostgreSQL HA (High Availability) in Under 60 Seconds
+# tiny-pg: Setup PostgreSQL HA (High Availability) in Under 60 Seconds
 Quickly spin up a PostgreSQL server with a **small footprint** (~50mb) running **asynchronous streaming replication**.
 
 ## Features
@@ -29,7 +29,7 @@ HOST_TYPE=PRIMARY
 REPUSER_PASSWORD=MySecretReplicationUserPassword
 POSTGRES_PASSWORD=MySecretPostgresUserPassword
 ```
-- start the primary server: `./alpine-postgres.sh <port>` (i.e. ./alpine-postgres.sh 5001)
+- start the primary server: `./tiny-pg.sh <port>` (i.e. ./tiny-pg.sh 5001)
 
 ### Secondary (Replica) Server
 - choose a port for your server (i.e. 5002)
@@ -43,7 +43,7 @@ POSTGRES_PASSWORD=MySecretPostgresUserPassword
 HOST_IP=192.168.1.100
 HOST_PORT=5001
 ```
-- start the secondary server: `./alpine-postgres.sh <port>` (i.e. ./alpine-postgres.sh 5002)
+- start the secondary server: `./tiny-pg.sh <port>` (i.e. ./tiny-pg.sh 5002)
 
 ## Installing PostgreSQL Extensions
 
@@ -56,9 +56,9 @@ To install your favorite extensions, see: [extensions.md](./extensions.md)
 - For security reasons you may want to edit or remove the `.env` file(s) after the container is running.
 - `HOST_IP` can be an ip address (i.e. `1.2.3.4`) or a domain name (i.e. `myserver.host.com`)
 
-By default, `alpine-postgres.sh` starts in "interactive mode".  This starts the PostgreSQL server and launches a `psql` command-line shell inside the container.  You can exit `psql` with `\q` and interact with the container.  Just type `exit` to leave the container (it will continue to run).
+By default, `tiny-pg.sh` starts in "interactive mode".  This starts the PostgreSQL server and launches a `psql` command-line shell inside the container.  You can exit `psql` with `\q` and interact with the container.  Just type `exit` to leave the container (it will continue to run).
 
-If you don't need or want to interact with the server, run `alpine-postgres-detached.sh` which just starts the server and exits immmediately.
+If you don't need or want to interact with the server, run `tiny-pg-detached.sh` which just starts the server and exits immmediately.
 
 ## Local Demo
 To see this in action, just run `./local-cluster.sh`.  This script will:
