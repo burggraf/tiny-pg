@@ -4,17 +4,24 @@ if [ -n "$1" ] && [ "$1" -eq "$1" ] 2>/dev/null; then
   echo "Checking for $FILE file..."
   if [ ! -f "$FILE" ]; then
     echo ""
-    echo "No $FILE file was found, so we'll create one for you.  This will be a primary server."
-    echo "We'll set up a temporary password of 'password' for the postgres user and the repuser."
-    echo "You should change this as soon as possible:"
+    echo "No $FILE file was found, so we'll create one for you."
     echo ""
-    echo "  ALTER USER postgres WITH PASSWORD 'newpassword';"
-    echo "  ALTER USER repuser WITH PASSWORD 'newpassword';"
+    read -p "Is this a primary server? (y/n): " PRIMARY
     echo ""
-    echo "HOST_TYPE=PRIMARY" > $FILE
-    echo "REPUSER_PASSWORD=password" >> $FILE
-    echo "POSTGRES_PASSWORD=password" >> $FILE
-    read -p "Press enter to continue"
+    read -p "Enter a password for the postgres user: " POSTGRES_PASSWORD
+    read -p "Enter a password for the replication user (repuser): " REPUSER_PASSWORD
+    if [[ "$PRIMARY" = "y" ]] || [[ "$PRIMARY" = "Y" ]]; then
+      echo "HOST_TYPE=PRIMARY" > $FILE
+    else
+      echo "HOST_TYPE=SECONDARY" > $FILE
+      read -p "Enter the IP address or domain name of the primary server: " HOST_IP
+      read -p "Enter the port of the primary server: " HOST_PORT
+      echo "HOST_IP=$HOST_IP" >> $FILE
+      echo "HOST_PORT=$HOST_PORT" >> $FILE
+    fi
+    echo "REPUSER_PASSWORD=$POSTGRES_PASSWORD" >> $FILE
+    echo "POSTGRES_PASSWORD=$REPUSER_PASSWORD" >> $FILE
+    echo ""
   fi
   echo Starting PostgreSQL instance on port: $1
   echo "Creating volume: pg-data-$1"

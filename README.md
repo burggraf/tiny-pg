@@ -12,12 +12,15 @@ Quickly spin up a PostgreSQL server with a **small footprint** (~50mb) running *
 - Docker command line installed (`docker -v` should return the current docker version, i.e. 20.10.16)
 - MacOS or Linux running amd64 or arm64 architecture (not tested on Windows but may work fine)
 
-## Quick Start
-Works on:
+# Works on:
 - MacOS arm64
 - MacOS amd64
 - Linux arm64
 - Linux amd64
+- Windows? (unknown)
+
+## Quick Start
+Just run `./tiny-pg.sh` and answer the questions to set up a primary or secondary (replica) server.
 
 ### Primary Server
 - choose a port for your server (i.e. 5001)
