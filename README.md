@@ -44,6 +44,10 @@ HOST_PORT=5001
 ```
 - start the secondary server: `./alpine-postgres.sh <port>` (i.e. ./alpine-postgres.sh 5002)
 
+## Installing PostgreSQL Extensions
+
+To install your favorite extensions, see: [extensions.md](./extensions.md)
+
 ## Limitations and other Notes
 
 - Streaming replication defaults to asynchronous mode, which is faster but may result in lost data of the latest transactions if the primary server fails before every write is completed on the secondary server(s).
