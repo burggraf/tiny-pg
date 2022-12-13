@@ -7,6 +7,24 @@ else
   echo "Found docker version: $DOCKER"
 fi
 if [ -n "$1" ] && [ "$1" -eq "$1" ] 2>/dev/null; then
+  if [ "$(docker ps | grep pg-$1)" ]; then
+      echo "Container pg-$1 is running."
+      echo "We'll log you in to the container and start up psql:"
+      docker exec -it pg-$1 /bin/sh -c "psql -U postgres;/bin/sh"
+      exit 0
+  else
+    if [ "$(docker ps -a | grep pg-$1)" ]; then
+        echo "Container pg-$1 exists, but is not running."
+        echo "Starting container: pg-$1"
+        docker start pg-$1
+        sleep 2
+        echo "We'll log you in to the container and start up psql:"
+        docker exec -it pg-$1 /bin/sh -c "psql -U postgres;/bin/sh"
+        exit 0
+    else
+        echo "Container pg-$1 does not exist."
+    fi
+  fi
   FILE="$1.env"
   echo "Checking for $FILE file..."
   if [ ! -f "$FILE" ]; then
