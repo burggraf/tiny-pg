@@ -1,4 +1,11 @@
 #!/bin/sh
+if [ "`which docker`" = "" ]; then
+  echo "Docker command line tool is not installed. Aborting..."
+  exit 1
+else
+  DOCKER=`docker -v | sed 's/\(.*\) \(.*\), \(.*\) .*/\2/'`
+  echo "Found docker version: $DOCKER"
+fi
 if [ -n "$1" ] && [ "$1" -eq "$1" ] 2>/dev/null; then
   FILE="$1.env"
   echo "Checking for $FILE file..."
