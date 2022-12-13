@@ -4,7 +4,7 @@ if [ -n "$1" ] && [ "$1" -eq "$1" ] 2>/dev/null; then
   echo "Checking for $FILE file..."
   if [ ! -f "$FILE" ]; then
     echo ""
-    echo "No $FILE file was found, so we'll create one for you."
+    echo "No config file ($FILE) was found, so we'll create one for you."
     echo ""
     read -p "Is this a primary server? (y/n): " PRIMARY
     echo ""
