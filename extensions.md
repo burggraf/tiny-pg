@@ -88,8 +88,10 @@ su postgres -c "pg_ctl restart -D /var/lib/postgresql/data"
 ```
 
 ### postgresql-temporal_tables
+- temporal_tables
 
 ### postgresql-shared_ispell
+- shared_ispell
 
 #### Notes
 ```sh
@@ -98,26 +100,35 @@ echo "shared_preload_libraries = 'shared_ispell'" >> /var/lib/postgresql/data/po
 su postgres -c "pg_ctl restart -D /var/lib/postgresql/data"
 ```
 ### postgresql-plpgsql_check
+- plpgsql_check
 
 ### postgresql-url_encode
+- url_encode
 
 ### postgresql-uint
+- uint
 
 ### postgresql-orafce
+- orafce
 
 ### postgresql-rum
+-rum
 
 ### postgresql-bdr-extension
 PostgreSQL bidirectional replication (BDR) extension
 - bdr
 
 ### postgresql-hypopg
+- hypopg
 
 ### postgresql-pllua
+- plluau
 
 ### postgresql-sequential-uuids
+- sequential_uuids
 
 ### postgresql-pg_cron
+- pg_cron
 
 #### Notes
 ```sh
