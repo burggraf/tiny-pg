@@ -70,3 +70,20 @@ The following extensions can be installed on your server(s) using a simple comma
 - hstore_plpython3u
 - ltree_plpython3u
 - plpython3u
+
+### postgresql-mysql_fdw
+- mysql_fdw
+
+### postgresql-citus-bitcode
+- citus
+- citus_columnar
+
+#### Notes
+Full installation requirements for citus:
+
+```sh
+apk add postgresql-citus-bitcode
+echo "shared_preload_libraries = 'citus'" >> /var/lib/postgresql/data/postgresql.conf
+su postgres -c "pg_ctl start -D /var/lib/postgresql/data"
+```
+
