@@ -84,6 +84,44 @@ Full installation requirements for citus:
 ```sh
 apk add postgresql-citus-bitcode
 echo "shared_preload_libraries = 'citus'" >> /var/lib/postgresql/data/postgresql.conf
-su postgres -c "pg_ctl start -D /var/lib/postgresql/data"
+su postgres -c "pg_ctl restart -D /var/lib/postgresql/data"
 ```
 
+### postgresql-temporal_tables
+
+### postgresql-shared_ispell
+
+#### Notes
+```sh
+apk add postgresql-shared_ispell
+echo "shared_preload_libraries = 'shared_ispell'" >> /var/lib/postgresql/data/postgresql.conf
+su postgres -c "pg_ctl restart -D /var/lib/postgresql/data"
+```
+### postgresql-plpgsql_check
+
+### postgresql-url_encode
+
+### postgresql-uint
+
+### postgresql-orafce
+
+### postgresql-rum
+
+### postgresql-bdr-extension
+PostgreSQL bidirectional replication (BDR) extension
+- bdr
+
+### postgresql-hypopg
+
+### postgresql-pllua
+
+### postgresql-sequential-uuids
+
+### postgresql-pg_cron
+
+#### Notes
+```sh
+apk add pg_cron
+echo "shared_preload_libraries = 'pg_cron'" >> /var/lib/postgresql/data/postgresql.conf
+su postgres -c "pg_ctl restart -D /var/lib/postgresql/data"
+```
