@@ -56,6 +56,12 @@ The following extensions can be installed on your server(s) using a simple comma
 - uuid-ossp
 - xml2
 
+### postgis
+- postgis
+- postgis_raster
+- postgis_tiger_geocoder
+- postgis_topology
+
 ### postgresql15-plperl-contrib
 - hstore_plperl
 - hstore_plperlu
