@@ -145,3 +145,11 @@ apk add pg_cron
 echo "shared_preload_libraries = 'pg_cron'" >> /var/lib/postgresql/data/postgresql.conf
 su postgres -c "pg_ctl restart -D /var/lib/postgresql/data"
 ```
+
+### pgsodium
+```sh
+docker exec -it postgres-5011 /bin/sh -c "apk add --update libsodium-dev"
+docker cp pgsodium.zip postgres-5011:/
+docker exec -it postgres-5011 /bin/sh -c "unzip pgsodium.zip"
+```
+
