@@ -72,6 +72,9 @@ The following extensions can be installed on your server(s) using a simple comma
 - pltcl
 - pltclu
 
+### postgresql15-plpython3
+- plpython3u
+
 ### postgresql15-plpython3-contrib
 - hstore_plpython3u
 - ltree_plpython3u
