@@ -2,7 +2,9 @@
 FILE=/var/lib/postgresql/data/postgresql.conf
 echo "HOST TYPE: $HOST_TYPE"
 echo "$HOST_TYPE" > /HOST_TYPE_$HOST_TYPE
+/usr/bin/fcgiwrap -s unix:/run/fcgiwrap.socket &
 nginx
+chmod 777 /run/fcgiwrap.socket
 if [ -f "$FILE" ]; then
     # postgresql is already initialized, just start it
     su postgres -c 'pg_ctl start -D /var/lib/postgresql/data'
