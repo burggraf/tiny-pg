@@ -1,4 +1,5 @@
 cd ./ui
+bun install
 npm run build
 cd ..
 docker buildx create --name build-tiny-pg

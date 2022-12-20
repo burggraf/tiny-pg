@@ -26,8 +26,6 @@
  * ```
  */
 declare module '$env/static/private' {
-	export const VITE_SUPABASE_URL: string;
-	export const VITE_SUPABASE_KEY: string;
 	export const NVM_INC: string;
 	export const WASMER_CACHE_DIR: string;
 	export const TERM_PROGRAM: string;
@@ -112,8 +110,6 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
-		VITE_SUPABASE_URL: string;
-		VITE_SUPABASE_KEY: string;
 		NVM_INC: string;
 		WASMER_CACHE_DIR: string;
 		TERM_PROGRAM: string;
