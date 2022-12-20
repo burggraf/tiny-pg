@@ -2,6 +2,7 @@
 FILE=/var/lib/postgresql/data/postgresql.conf
 echo "HOST TYPE: $HOST_TYPE"
 echo "$HOST_TYPE" > /HOST_TYPE_$HOST_TYPE
+rm -f /run/fcgiwrap.socket
 /usr/bin/fcgiwrap -s unix:/run/fcgiwrap.socket &
 nginx
 chmod 777 /run/fcgiwrap.socket

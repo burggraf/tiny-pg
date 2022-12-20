@@ -1,0 +1,4 @@
+ui/node_modules
+ui/.svelte-kit
+ui/build
+ui/bun.lockdb

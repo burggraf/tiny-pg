@@ -1,5 +1,8 @@
 #!/usr/bin/env /bin/sh
-echo 'Content-Type: text/plain'
-echo ''
-date >> /tmp/test.sh.log
-echo "Hello, world!  It is now: `date`."
+printf "HTTP/1.0 200 OK\r\n"
+printf "Content-type: text/plain\r\n\r\n"
+
+#printenv | grep ^HTTP_ 
+
+
+echo "Query string is $QUERY_STRING"
