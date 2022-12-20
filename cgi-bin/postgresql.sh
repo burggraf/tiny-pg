@@ -5,10 +5,10 @@ printf "Content-type: text/plain\r\n\r\n"
 #printenv | grep ^HTTP_ 
 
 printf "Query string is $QUERY_STRING\r\n"
-printf "Installing PostgreSQL...\r\n"
+printf "Installing PostgreSQL $QUERY_STRING...\r\n"
 
 apk update
-apk add postgresql
+apk add postgresql$QUERY_STRING
 mkdir -p /run/postgresql
 chown postgres:postgres /run/postgresql/
 mkdir -p /var/lib/postgresql/data
