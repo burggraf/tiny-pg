@@ -74,7 +74,6 @@ declare module '$env/static/private' {
 	export const npm_config_cache: string;
 	export const LOGNAME: string;
 	export const npm_lifecycle_script: string;
-	export const OLD_DB_URL: string;
 	export const BUN_INSTALL: string;
 	export const NVM_BIN: string;
 	export const npm_config_user_agent: string;
@@ -159,7 +158,6 @@ declare module '$env/dynamic/private' {
 		npm_config_cache: string;
 		LOGNAME: string;
 		npm_lifecycle_script: string;
-		OLD_DB_URL: string;
 		BUN_INSTALL: string;
 		NVM_BIN: string;
 		npm_config_user_agent: string;

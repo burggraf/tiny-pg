@@ -4,10 +4,12 @@
   import { onMount } from 'svelte'
 	// goto('/components/Splash');
 	let installed_packages: any = [];
-	const get_installed_pacakges = async () => {
-		const response = await fetch('/cgi-bin/get_installed_packages.sh');
+	let total_size: number = 0;
+
+	const get_info = async (script: string) => {
+		const response = await fetch(`/cgi-bin/${script}.sh`);
   		const data = await response.text(); // .json();
-		installed_packages = data.split('\n');
+		return data;		
 	}
 	const run_script = async (script: string, message: string) => {
 		const loader = await loadingBox(message)
@@ -18,10 +20,12 @@
 			output.innerHTML = data;
 		}
 		loader.dismiss();
-		get_installed_pacakges();
+		installed_packages = (await get_info('get_installed_packages')).split('\n');
+		total_size = parseInt((await get_info('get_installed_packages_total_size')).trim());
 	}
-	onMount(() => {
-		get_installed_pacakges();
+	onMount(async () => {
+		installed_packages = (await get_info('get_installed_packages')).split('\n');
+		total_size = parseInt((await get_info('get_installed_packages_total_size')).trim());
 	});
 </script>
 <ion-header>
@@ -156,4 +160,5 @@
 
 	Installed: 
 	<div>{JSON.stringify(installed_packages)}</div>
+	Total size: {total_size.toLocaleString()} bytes
 </ion-content>

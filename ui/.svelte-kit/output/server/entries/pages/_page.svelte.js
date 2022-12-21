@@ -3,6 +3,7 @@ import "@ionic/core";
 import "../../chunks/platform.js";
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let installed_packages = [];
+  let total_size = 0;
   return `<ion-header><ion-toolbar translucent="${"true"}"><ion-buttons slot="${"start"}"><ion-menu-button></ion-menu-button></ion-buttons>
 		<ion-title>Main Page</ion-title></ion-toolbar></ion-header>
 <ion-content class="${"ion-padding"}"><ion-button expand="${"block"}" size="${"small"}" fill="${"outline"}" ${installed_packages.includes("postgresql15") ? "disabled" : ""}>Install PostgreSQL 15</ion-button>
@@ -59,7 +60,9 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
 	<pre id="${"output"}"></pre>
 
 	Installed: 
-	<div>${escape(JSON.stringify(installed_packages))}</div></ion-content>`;
+	<div>${escape(JSON.stringify(installed_packages))}</div>
+	Total size: ${escape(total_size.toLocaleString())} bytes
+</ion-content>`;
 });
 export {
   Page as default

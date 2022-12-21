@@ -344,7 +344,7 @@ const Menu = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   $$unsubscribe_pwaBeforeInstallPrompt = subscribe(pwaBeforeInstallPrompt, (value) => value);
   let hideMenu = true;
   let { side = "start" } = $$props;
-  const app_version = "0.2.0";
+  const app_version = "0.2.1";
   const app_menu_title = "Svelte Ionic";
   const app_menu_subtitle = "SvelteKit + Ionic";
   const appPages = [
