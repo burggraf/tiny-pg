@@ -10,13 +10,13 @@ const extensions = [
     size: 0
   },
   {
-    "package": "???",
+    "package": "postgis",
     name: "address_standardizer",
     desc: "Used to parse an address into constituent elements. Generally used to support geocoding address normalization step.",
     size: 0
   },
   {
-    "package": "???",
+    "package": "postgis",
     name: "address_standardizer_data_us",
     desc: "Address Standardizer US dataset example",
     size: 0
@@ -125,7 +125,8 @@ const extensions = [
   },
   {
     "package": "postgresql15-contrib-jit",
-    name: "intarrfunctions, operators, and index support for 1-D arrays of integers",
+    name: "intarr",
+    desc: "functions, operators, and index support for 1-D arrays of integers",
     size: 0
   },
   {
@@ -166,7 +167,8 @@ const extensions = [
   },
   {
     "package": "postgresql15-contrib-jit",
-    name: "pg_bufexamine the shared buffer cache",
+    name: "pg_buf",
+    desc: "examine the shared buffer cache",
     size: 0
   },
   {
@@ -195,7 +197,8 @@ const extensions = [
   },
   {
     "package": "postgresql15-contrib-jit",
-    name: "pg_trgtext similarity measurement and index searching based on trigrams",
+    name: "pg_trg",
+    desc: "text similarity measurement and index searching based on trigrams",
     size: 0
   },
   {
