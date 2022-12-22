@@ -2,9 +2,14 @@
 	// import { goto } from '$app/navigation';
 	import { loadingBox } from '$services/loadingMessage';
   import { onMount } from 'svelte'
+  import extensions from './extensions.json';
+  import * as allIonicIcons from 'ionicons/icons';
+
 	// goto('/components/Splash');
 	let installed_packages: any = [];
 	let total_size: number = 0;
+	let installed_extensions: any = [];
+	// read extensions from extensions.json
 
 	const get_info = async (script: string) => {
 		const response = await fetch(`/cgi-bin/${script}.sh`);
@@ -20,12 +25,29 @@
 			output.innerHTML = data;
 		}
 		loader.dismiss();
-		installed_packages = (await get_info('get_installed_packages')).split('\n');
-		total_size = parseInt((await get_info('get_installed_packages_total_size')).trim());
+		try {
+			installed_packages = (await get_info('get_installed_packages')).split('\n');
+			total_size = parseInt((await get_info('get_installed_packages_total_size')).trim());			
+		} catch (err) {
+			installed_packages = [];
+			total_size = 0;
+		}
+		const installed_extensions_output = await get_info('get_extensions');
+		try {
+			installed_extensions = JSON.parse(installed_extensions_output)
+		} catch (err) {
+			console.error('error parsing installed extensions', err);
+		}
 	}
 	onMount(async () => {
 		installed_packages = (await get_info('get_installed_packages')).split('\n');
 		total_size = parseInt((await get_info('get_installed_packages_total_size')).trim());
+		const installed_extensions_output = await get_info('get_extensions');
+		try {
+			installed_extensions = JSON.parse(installed_extensions_output)
+		} catch (err) {
+			console.error('error parsing installed extensions', err);
+		}
 	});
 </script>
 <ion-header>
@@ -55,7 +77,19 @@
 	on:click={() => {run_script('/cgi-bin/postgresql.sh?12',"Installing PostgreSQL 12...")}}>Install PostgreSQL 12</ion-button>
 
 	<h3>Extension Packs:</h3>
-	<ion-button expand="block" size="small" fill="outline" 
+	<ion-grid>
+		{#each extensions as extension}
+			<ion-row on:click={() => {run_script(`/cgi-bin/add.sh?${extension.package}`,`Installing package ${extension.package}...`)}}>
+				<ion-col>
+					<ion-icon size="large" icon={installed_packages.includes(extension.package)?allIonicIcons.radioButtonOnOutline:allIonicIcons.radioButtonOffOutline} />
+					{extension.name}</ion-col>
+				<ion-col>{extension.package}</ion-col>
+				<ion-col>{extension.size}</ion-col>
+			</ion-row>
+		{/each}		
+	</ion-grid>
+
+	<!-- <ion-button expand="block" size="small" fill="outline" 
 	disabled={installed_packages.includes('postgresql15-contrib-jit')}
 	on:click={() => {run_script('/cgi-bin/add.sh?postgresql15-contrib-jit',"Installing postgresql15-contrib-jit...")}}>
 	postgresql15-contrib-jit</ion-button>
@@ -143,16 +177,16 @@
 	<ion-button expand="block" size="small" fill="outline" 
 	disabled={installed_packages.includes('postgresql-citus-bitcode')}
 	on:click={() => {run_script('/cgi-bin/citus.sh',"Installing citus...")}}>
-	citus**</ion-button>
+	citus**</ion-button> -->
 
 	<!-- <ion-button expand="block" size="small" fill="outline" 
 	on:click={() => {run_script('/cgi-bin/shared_ispell.sh',"Installing shared_ispell...")}}>
 	shared_ispell**</ion-button> -->
 
-	<ion-button expand="block" size="small" fill="outline" 
+	<!-- <ion-button expand="block" size="small" fill="outline" 
 	disabled={installed_packages.includes('postgresql-pg_cron')}
 	on:click={() => {run_script('/cgi-bin/pg_cron.sh',"Installing pg_cron...")}}>
-	pg_cron**</ion-button>
+	pg_cron**</ion-button> -->
 
 	<br/>** = requires PostgreSQL restart<br/>
 
@@ -160,5 +194,8 @@
 
 	Installed: 
 	<div>{JSON.stringify(installed_packages)}</div>
-	Total size: {total_size.toLocaleString()} bytes
+	<div>Total size: {total_size.toLocaleString()} bytes</div>
+	<div>Extensions: {JSON.stringify(extensions)}</div>
+	<div>Installed Extensions: {JSON.stringify(installed_extensions)}</div>
+	
 </ion-content>
