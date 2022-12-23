@@ -15,7 +15,7 @@
 	setupIonicSvelte({ mode: 'ios' });
 
 	pwaStatusStream.subscribe((status: PWAStatus) => {
-		console.log('PWA status', status);
+		// console.log('PWA status', status);
 
 		if (status.updateFunction) {
 			console.log('PWA updating itself in 4 secs......');

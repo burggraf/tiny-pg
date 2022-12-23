@@ -2412,7 +2412,7 @@ class Server {
       app_template,
       app_template_contains_nonce: false,
       error_template,
-      version: "1671808504005"
+      version: "1671808931936"
     };
   }
   async init({ env }) {
