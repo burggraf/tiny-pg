@@ -21,6 +21,7 @@
 	let total_size: number = 0;
 	let installed_extensions: any = [];
 	let pg_version: string = '';
+	let extension_search_text: string = '';
 	// read extensions from extensions.json
 
 	const get_info = async (script: string) => {
@@ -125,49 +126,90 @@
 	{/if}
 
 	{#if pg_version > ''}
-		<h3>Extension Packs:</h3>
+
+		<ion-searchbar 
+			placeholder="Search extensions"
+			debounce="500"
+			on:ionChange={e => {
+				extension_search_text = e.detail.value.trim();
+			}}
+		></ion-searchbar>
+
 		<ion-grid>
 			<ion-row>
-				<ion-col size="4" class="header_col">Extension</ion-col>
-				<ion-col size="4" class="header_col">Package</ion-col>
-				<ion-col size="2" class="header_col">Installed</ion-col>
-				<ion-col size="2" class="header_col">Enabled</ion-col>
+				<ion-col size="8" class="header_col">
+					<ion-grid>
+						<ion-row>
+							<ion-col size="6">Extension</ion-col>
+							<ion-col size="6" class="ion-text-right">Package</ion-col>
+						</ion-row>
+					</ion-grid>
+				</ion-col>
+				<ion-col size="2" class="header_col">
+					<ion-grid>
+						<ion-row>
+							<ion-col class="ion-text-center" size="12">Installed</ion-col>
+						</ion-row>
+					</ion-grid>
+				</ion-col>
+				<ion-col size="2" class="header_col">
+					<ion-grid>
+						<ion-row>
+							<ion-col class="ion-text-center" size="12">Enabled</ion-col>
+						</ion-row>
+					</ion-grid>
+				</ion-col>
 			</ion-row>
 			{#each extensions as extension}
-				<ion-row>
-					<ion-col size="4">{extension.name}</ion-col>
-					<ion-col size="4">{extension.package}</ion-col>
-					<ion-col size="2">
-						{#if extension.installed}
-							<ion-button 
-								on:click={() => { console.log('uninstall extensions not implemented')}} 
-								size="small" fill="outline">{extension.installed}</ion-button>
-							{:else}
-							<ion-button 
-								on:click={() => {run_script(`/cgi-bin/add.sh?${extension.package}`,`Installing package ${extension.package}...`)}} 
-								size="small" fill="outline">Install</ion-button>
-						{/if}
-					</ion-col>
-					<ion-col size="2">					
-						{#if extension.installed}
-							{#if extension.enabled}
+				{#if extension_search_text === '' 
+					|| extension?.name?.toLowerCase().includes(extension_search_text.toLowerCase())
+					|| extension?.package?.toLowerCase().includes(extension_search_text.toLowerCase())
+					|| extension?.desc?.toLowerCase().includes(extension_search_text.toLowerCase())
+				}
+					<ion-row>
+						<ion-col size="8">
+							<ion-grid style="background-color: var(--ion-color-light); border: 1px solid;">
+								<ion-row>
+									<ion-col size="6"><b>{extension.name}</b></ion-col>
+									<ion-col size="6" class="ion-text-right">{extension.package}</ion-col>
+								</ion-row>
+								<ion-row>
+									<ion-col size="12">{extension.desc}</ion-col>
+								</ion-row>
+							</ion-grid>						
+						</ion-col>
+						<ion-col size="2" class="ion-text-center">
+							{#if extension.installed}
 								<ion-button 
-								on:click={() => {run_script(`/cgi-bin/disable_extension.sh?${extension.name}`,`Disabling extension ${extension.name}...`)}} 
-								size="small" fill="outline">Disable</ion-button>
-							{:else}
+									on:click={() => { console.log('uninstall extensions not implemented')}} 
+									size="small" fill="outline">{extension.installed}</ion-button>
+								{:else}
 								<ion-button 
-								on:click={() => {run_script(`/cgi-bin/enable_extension.sh?${extension.name}`,`Enabling extension ${extension.name}...`)}} 
-								size="small" fill="outline">Enable</ion-button>
+									on:click={() => {run_script(`/cgi-bin/add.sh?${extension.package}`,`Installing package ${extension.package}...`)}} 
+									size="small" fill="outline">Install</ion-button>
 							{/if}
-						{:else}
-							&nbsp;
-						{/if}
-					</ion-col>
-					<!-- <ion-col>{extension.size}</ion-col> -->
-				</ion-row>
-				<ion-row>
-					<ion-col size="12">{extension.desc}</ion-col>
-				</ion-row>
+						</ion-col>
+						<ion-col size="2" class="ion-text-center">					
+							{#if extension.installed}
+								{#if extension.enabled}
+									<ion-button 
+									on:click={() => {run_script(`/cgi-bin/disable_extension.sh?${extension.name}`,`Disabling extension ${extension.name}...`)}} 
+									size="small" fill="outline">Disable</ion-button>
+								{:else}
+									<ion-button 
+									on:click={() => {run_script(`/cgi-bin/enable_extension.sh?${extension.name}`,`Enabling extension ${extension.name}...`)}} 
+									size="small" fill="outline">Enable</ion-button>
+								{/if}
+							{:else}
+								&nbsp;
+							{/if}
+						</ion-col>
+						<!-- <ion-col>{extension.size}</ion-col> -->
+					</ion-row>
+					<ion-row>
+						<ion-col size="12">&nbsp;</ion-col>
+					</ion-row>
+				{/if}
 			{/each}		
 		</ion-grid>
 	{/if}
