@@ -20,6 +20,7 @@
 	let installed_packages: any = [];
 	let total_size: number = 0;
 	let installed_extensions: any = [];
+	let pg_version: string = '';
 	// read extensions from extensions.json
 
 	const get_info = async (script: string) => {
@@ -77,17 +78,24 @@
 		}
 
 	}
+	const install_postgres = async (version: string) => {
+		await run_script(`/cgi-bin/postgresql.sh?${version}`,`Installing PostgreSQL ${version}...`);
+		pg_version = (await get_info('get_pg_version')).trim();
+	}
 
 	onMount(async () => {
 		installed_packages = (await get_info('get_installed_packages')).split('\n');
 		total_size = parseInt((await get_info('get_installed_packages_total_size')).trim());
-		const installed_extensions_output = await get_info('get_extensions');
-		try {
-			installed_extensions = JSON.parse(installed_extensions_output)
-		} catch (err) {
-			console.error('error parsing installed extensions', err);
+		pg_version = (await get_info('get_pg_version')).trim();
+		if (pg_version > '') {
+			const installed_extensions_output = await get_info('get_extensions');
+			try {
+				installed_extensions = JSON.parse(installed_extensions_output)
+			} catch (err) {
+				console.error('error parsing installed extensions', err);
+			}
+			reload();
 		}
-		reload();
 	});
 </script>
 <ion-header>
@@ -100,67 +108,69 @@
 </ion-header>
 <ion-content class="ion-padding">
 
-	<ion-button expand="block" size="small" fill="outline" 
-	disabled={installed_packages.includes('postgresql15')}
-	on:click={() => {run_script('/cgi-bin/postgresql.sh',"Installing PostgreSQL 15...")}}>Install PostgreSQL 15</ion-button>
+	<h3>PostgreSQL: {pg_version || "Not installed"}</h3>
 
-	<ion-button expand="block" size="small" fill="outline" 
-	disabled={installed_packages.includes('postgresql14')}
-	on:click={() => {run_script('/cgi-bin/postgresql.sh?14',"Installing PostgreSQL 14...")}}>Install PostgreSQL 14</ion-button>
+	{#if pg_version === ''}
+		<ion-button expand="block" size="small" fill="outline" 
+		on:click={() => {install_postgres("15")}}>Install PostgreSQL 15</ion-button>
 
-	<ion-button expand="block" size="small" fill="outline" 
-	disabled={installed_packages.includes('postgresql13')}
-	on:click={() => {run_script('/cgi-bin/postgresql.sh?13',"Installing PostgreSQL 13...")}}>Install PostgreSQL 13</ion-button>
+		<ion-button expand="block" size="small" fill="outline" 
+		on:click={() => {install_postgres("14")}}>Install PostgreSQL 14</ion-button>
 
-	<ion-button expand="block" size="small" fill="outline" 
-	disabled={installed_packages.includes('postgresql12')}
-	on:click={() => {run_script('/cgi-bin/postgresql.sh?12',"Installing PostgreSQL 12...")}}>Install PostgreSQL 12</ion-button>
+		<ion-button expand="block" size="small" fill="outline" 
+		on:click={() => {install_postgres("13")}}>Install PostgreSQL 13</ion-button>
 
-	<h3>Extension Packs:</h3>
-	<ion-grid>
-		<ion-row>
-			<ion-col class="header_col">Extension</ion-col>
-			<ion-col class="header_col">Installed</ion-col>
-			<ion-col class="header_col">Active</ion-col>
-			<ion-col class="header_col">Package</ion-col>
-			<ion-col class="header_col">Size</ion-col>
-		</ion-row>
-		{#each extensions as extension}
+		<ion-button expand="block" size="small" fill="outline" 
+		on:click={() => {install_postgres("12")}}>Install PostgreSQL 12</ion-button>
+	{/if}
+
+	{#if pg_version > ''}
+		<h3>Extension Packs:</h3>
+		<ion-grid>
 			<ion-row>
-				<ion-col>
-					<!-- <ion-icon size="large" icon={installed_packages.includes(extension.package)?allIonicIcons.radioButtonOnOutline:allIonicIcons.radioButtonOffOutline} /> -->
-					{extension.name}</ion-col>
-				<ion-col>
-					{#if extension.installed}
-						<ion-button 
-							on:click={() => { console.log('uninstall extensions not implemented')}} 
-							size="small" fill="outline">{extension.installed}</ion-button>
-						{:else}
-						<ion-button 
-							on:click={() => {run_script(`/cgi-bin/add.sh?${extension.package}`,`Installing package ${extension.package}...`)}} 
-							size="small" fill="outline">Install</ion-button>
-					{/if}
-				</ion-col>
-				<ion-col>					
-					{#if extension.installed}
-						{#if extension.enabled}
-							<ion-button 
-							on:click={() => {run_script(`/cgi-bin/disable_extension.sh?${extension.name}`,`Disabling extension ${extension.name}...`)}} 
-							size="small" fill="outline">Disable</ion-button>
-						{:else}
-							<ion-button 
-							on:click={() => {run_script(`/cgi-bin/enable_extension.sh?${extension.name}`,`Enabling extension ${extension.name}...`)}} 
-							size="small" fill="outline">Enable</ion-button>
-						{/if}
-					{:else}
-						&nbsp;
-					{/if}
-				</ion-col>
-				<ion-col>{extension.package}</ion-col>
-				<ion-col>{extension.size}</ion-col>
+				<ion-col size="4" class="header_col">Extension</ion-col>
+				<ion-col size="4" class="header_col">Package</ion-col>
+				<ion-col size="2" class="header_col">Installed</ion-col>
+				<ion-col size="2" class="header_col">Enabled</ion-col>
 			</ion-row>
-		{/each}		
-	</ion-grid>
+			{#each extensions as extension}
+				<ion-row>
+					<ion-col size="4">{extension.name}</ion-col>
+					<ion-col size="4">{extension.package}</ion-col>
+					<ion-col size="2">
+						{#if extension.installed}
+							<ion-button 
+								on:click={() => { console.log('uninstall extensions not implemented')}} 
+								size="small" fill="outline">{extension.installed}</ion-button>
+							{:else}
+							<ion-button 
+								on:click={() => {run_script(`/cgi-bin/add.sh?${extension.package}`,`Installing package ${extension.package}...`)}} 
+								size="small" fill="outline">Install</ion-button>
+						{/if}
+					</ion-col>
+					<ion-col size="2">					
+						{#if extension.installed}
+							{#if extension.enabled}
+								<ion-button 
+								on:click={() => {run_script(`/cgi-bin/disable_extension.sh?${extension.name}`,`Disabling extension ${extension.name}...`)}} 
+								size="small" fill="outline">Disable</ion-button>
+							{:else}
+								<ion-button 
+								on:click={() => {run_script(`/cgi-bin/enable_extension.sh?${extension.name}`,`Enabling extension ${extension.name}...`)}} 
+								size="small" fill="outline">Enable</ion-button>
+							{/if}
+						{:else}
+							&nbsp;
+						{/if}
+					</ion-col>
+					<!-- <ion-col>{extension.size}</ion-col> -->
+				</ion-row>
+				<ion-row>
+					<ion-col size="12">{extension.desc}</ion-col>
+				</ion-row>
+			{/each}		
+		</ion-grid>
+	{/if}
 
 	<!-- <ion-button expand="block" size="small" fill="outline" 
 	disabled={installed_packages.includes('postgresql15-contrib-jit')}

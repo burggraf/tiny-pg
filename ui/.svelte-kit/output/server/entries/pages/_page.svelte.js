@@ -1,4 +1,4 @@
-import { c as create_ssr_component, f as each, e as escape } from "../../chunks/index.js";
+import { c as create_ssr_component, e as escape } from "../../chunks/index.js";
 import "@ionic/core";
 import "../../chunks/platform.js";
 import "ionicons/icons";
@@ -491,29 +491,17 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   $$result.css.add(css);
   return `<ion-header><ion-toolbar translucent="${"true"}"><ion-buttons slot="${"start"}"><ion-menu-button></ion-menu-button></ion-buttons>
 		<ion-title>Main Page</ion-title></ion-toolbar></ion-header>
-<ion-content class="${"ion-padding"}"><ion-button expand="${"block"}" size="${"small"}" fill="${"outline"}" ${installed_packages.includes("postgresql15") ? "disabled" : ""}>Install PostgreSQL 15</ion-button>
+<ion-content class="${"ion-padding"}"><h3>PostgreSQL: ${escape("Not installed")}</h3>
 
-	<ion-button expand="${"block"}" size="${"small"}" fill="${"outline"}" ${installed_packages.includes("postgresql14") ? "disabled" : ""}>Install PostgreSQL 14</ion-button>
+	${`<ion-button expand="${"block"}" size="${"small"}" fill="${"outline"}">Install PostgreSQL 15</ion-button>
 
-	<ion-button expand="${"block"}" size="${"small"}" fill="${"outline"}" ${installed_packages.includes("postgresql13") ? "disabled" : ""}>Install PostgreSQL 13</ion-button>
+		<ion-button expand="${"block"}" size="${"small"}" fill="${"outline"}">Install PostgreSQL 14</ion-button>
 
-	<ion-button expand="${"block"}" size="${"small"}" fill="${"outline"}" ${installed_packages.includes("postgresql12") ? "disabled" : ""}>Install PostgreSQL 12</ion-button>
+		<ion-button expand="${"block"}" size="${"small"}" fill="${"outline"}">Install PostgreSQL 13</ion-button>
 
-	<h3>Extension Packs:</h3>
-	<ion-grid><ion-row><ion-col class="${"header_col svelte-cvgm1"}">Extension</ion-col>
-			<ion-col class="${"header_col svelte-cvgm1"}">Installed</ion-col>
-			<ion-col class="${"header_col svelte-cvgm1"}">Active</ion-col>
-			<ion-col class="${"header_col svelte-cvgm1"}">Package</ion-col>
-			<ion-col class="${"header_col svelte-cvgm1"}">Size</ion-col></ion-row>
-		${each(extensions, (extension) => {
-    return `<ion-row><ion-col>
-					${escape(extension.name)}</ion-col>
-				<ion-col>${extension.installed ? `<ion-button size="${"small"}" fill="${"outline"}">${escape(extension.installed)}</ion-button>` : `<ion-button size="${"small"}" fill="${"outline"}">Install</ion-button>`}</ion-col>
-				<ion-col>${extension.installed ? `${extension.enabled ? `<ion-button size="${"small"}" fill="${"outline"}">Disable</ion-button>` : `<ion-button size="${"small"}" fill="${"outline"}">Enable</ion-button>`}` : ` `}</ion-col>
-				<ion-col>${escape(extension.package)}</ion-col>
-				<ion-col>${escape(extension.size)}</ion-col>
-			</ion-row>`;
-  })}</ion-grid>
+		<ion-button expand="${"block"}" size="${"small"}" fill="${"outline"}">Install PostgreSQL 12</ion-button>`}
+
+	${``}
 
 	
 
