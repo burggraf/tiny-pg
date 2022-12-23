@@ -4,4 +4,4 @@ printf "Content-type: text/plain\r\n\r\n"
 
 #printenv | grep ^HTTP_
 
-printf "`psql -U postgres -c \"CREATE EXTENSION IF NOT EXISTS $QUERY_STRING\"`"
+printf "`psql -U postgres -c \"CREATE EXTENSION IF NOT EXISTS $QUERY_STRING CASCADE\"`"
