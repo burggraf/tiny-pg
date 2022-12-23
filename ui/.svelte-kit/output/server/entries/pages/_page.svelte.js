@@ -1,8 +1,8 @@
-import { c as create_ssr_component, f as each, e as escape, d as add_attribute } from "../../chunks/index.js";
+import { c as create_ssr_component, f as each, e as escape } from "../../chunks/index.js";
 import "@ionic/core";
 import "../../chunks/platform.js";
-import * as allIonicIcons from "ionicons/icons";
-const extensions = [
+import "ionicons/icons";
+const extensions_list = [
   {
     "package": "(default)",
     name: "plpgsql",
@@ -125,7 +125,7 @@ const extensions = [
   },
   {
     "package": "postgresql15-contrib-jit",
-    name: "intarr",
+    name: "intarray",
     desc: "functions, operators, and index support for 1-D arrays of integers",
     size: 0
   },
@@ -167,7 +167,7 @@ const extensions = [
   },
   {
     "package": "postgresql15-contrib-jit",
-    name: "pg_buf",
+    name: "pg_buffercache",
     desc: "examine the shared buffer cache",
     size: 0
   },
@@ -197,7 +197,7 @@ const extensions = [
   },
   {
     "package": "postgresql15-contrib-jit",
-    name: "pg_trg",
+    name: "pg_trgm",
     desc: "text similarity measurement and index searching based on trigrams",
     size: 0
   },
@@ -478,10 +478,17 @@ const extensions = [
     size: 0
   }
 ];
+const _page_svelte_svelte_type_style_lang = "";
+const css = {
+  code: ".header_col.svelte-cvgm1{font-weight:bold}",
+  map: null
+};
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  const extensions = extensions_list;
   let installed_packages = [];
   let total_size = 0;
   let installed_extensions = [];
+  $$result.css.add(css);
   return `<ion-header><ion-toolbar translucent="${"true"}"><ion-buttons slot="${"start"}"><ion-menu-button></ion-menu-button></ion-buttons>
 		<ion-title>Main Page</ion-title></ion-toolbar></ion-header>
 <ion-content class="${"ion-padding"}"><ion-button expand="${"block"}" size="${"small"}" fill="${"outline"}" ${installed_packages.includes("postgresql15") ? "disabled" : ""}>Install PostgreSQL 15</ion-button>
@@ -493,13 +500,16 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
 	<ion-button expand="${"block"}" size="${"small"}" fill="${"outline"}" ${installed_packages.includes("postgresql12") ? "disabled" : ""}>Install PostgreSQL 12</ion-button>
 
 	<h3>Extension Packs:</h3>
-	<ion-grid>${each(extensions, (extension) => {
-    return `<ion-row><ion-col><ion-icon size="${"large"}"${add_attribute(
-      "icon",
-      installed_packages.includes(extension.package) ? allIonicIcons.radioButtonOnOutline : allIonicIcons.radioButtonOffOutline,
-      0
-    )}></ion-icon>
+	<ion-grid><ion-row><ion-col class="${"header_col svelte-cvgm1"}">Extension</ion-col>
+			<ion-col class="${"header_col svelte-cvgm1"}">Installed</ion-col>
+			<ion-col class="${"header_col svelte-cvgm1"}">Active</ion-col>
+			<ion-col class="${"header_col svelte-cvgm1"}">Package</ion-col>
+			<ion-col class="${"header_col svelte-cvgm1"}">Size</ion-col></ion-row>
+		${each(extensions, (extension) => {
+    return `<ion-row><ion-col>
 					${escape(extension.name)}</ion-col>
+				<ion-col>${extension.installed ? `<ion-button size="${"small"}" fill="${"outline"}">${escape(extension.installed)}</ion-button>` : `<ion-button size="${"small"}" fill="${"outline"}">Install</ion-button>`}</ion-col>
+				<ion-col>${extension.installed ? `${extension.enabled ? `<ion-button size="${"small"}" fill="${"outline"}">Disable</ion-button>` : `<ion-button size="${"small"}" fill="${"outline"}">Enable</ion-button>`}` : ` `}</ion-col>
 				<ion-col>${escape(extension.package)}</ion-col>
 				<ion-col>${escape(extension.size)}</ion-col>
 			</ion-row>`;
@@ -519,7 +529,9 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
 	<div>${escape(JSON.stringify(installed_packages))}</div>
 	<div>Total size: ${escape(total_size.toLocaleString())} bytes</div>
 	<div>Extensions: ${escape(JSON.stringify(extensions))}</div>
-	<div>Installed Extensions: ${escape(JSON.stringify(installed_extensions))}</div></ion-content>`;
+	<div>Installed Extensions: ${escape(JSON.stringify(installed_extensions))}</div>
+	
+</ion-content>`;
 });
 export {
   Page as default

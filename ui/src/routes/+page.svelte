@@ -1,9 +1,20 @@
 <script lang="ts">
 	// import { goto } from '$app/navigation';
-	import { loadingBox } from '$services/loadingMessage';
+  import { loadingBox } from '$services/loadingMessage';
   import { onMount } from 'svelte'
-  import extensions from './extensions.json';
+  import extensions_list from './extensions.json';
   import * as allIonicIcons from 'ionicons/icons';
+ 
+// create an interface for the extensions.json file
+	interface Extension {
+		name?: string;
+		package?: string;
+		size?: number;
+		desc?: string;
+		installed?: string;
+		enabled?: boolean;
+	}
+  const extensions: Extension[] = extensions_list;
 
 	// goto('/components/Splash');
 	let installed_packages: any = [];
@@ -28,17 +39,45 @@
 		try {
 			installed_packages = (await get_info('get_installed_packages')).split('\n');
 			total_size = parseInt((await get_info('get_installed_packages_total_size')).trim());			
+			// set_installed_extensions();
 		} catch (err) {
 			installed_packages = [];
 			total_size = 0;
 		}
-		const installed_extensions_output = await get_info('get_extensions');
-		try {
-			installed_extensions = JSON.parse(installed_extensions_output)
-		} catch (err) {
-			console.error('error parsing installed extensions', err);
+		reload();
+	}
+	const set_installed_extensions = (installed_extensions: any[]) => {
+		for (let i = 0; i < installed_extensions.length; i++) {
+			const e = installed_extensions[i];
+			/* e:
+				default_version: "2.1"
+				installed_version: null
+				name: "adminpack"
+			*/
+			const index = extensions.findIndex((ext: any) => ext.name === e.name);
+			if (index > -1) {
+				extensions[index].installed = e.default_version;
+				extensions[index].enabled = (e.installed_version !== null);
+			} else {
+				console.error('set_installed_extensions could not find extension', e);
+			}
 		}
 	}
+	const reload = async () => {
+		try {
+			const installed_extensions_output = await get_info('get_extensions');
+			try {
+				installed_extensions = JSON.parse(installed_extensions_output)
+				set_installed_extensions(installed_extensions);
+			} catch (err) {
+				console.error('error parsing installed extensions', err);
+			}
+		} catch (err) {
+			console.error('reload error', err);
+		}
+
+	}
+
 	onMount(async () => {
 		installed_packages = (await get_info('get_installed_packages')).split('\n');
 		total_size = parseInt((await get_info('get_installed_packages_total_size')).trim());
@@ -48,6 +87,7 @@
 		} catch (err) {
 			console.error('error parsing installed extensions', err);
 		}
+		reload();
 	});
 </script>
 <ion-header>
@@ -78,11 +118,44 @@
 
 	<h3>Extension Packs:</h3>
 	<ion-grid>
+		<ion-row>
+			<ion-col class="header_col">Extension</ion-col>
+			<ion-col class="header_col">Installed</ion-col>
+			<ion-col class="header_col">Active</ion-col>
+			<ion-col class="header_col">Package</ion-col>
+			<ion-col class="header_col">Size</ion-col>
+		</ion-row>
 		{#each extensions as extension}
-			<ion-row on:click={() => {run_script(`/cgi-bin/add.sh?${extension.package}`,`Installing package ${extension.package}...`)}}>
+			<ion-row>
 				<ion-col>
-					<ion-icon size="large" icon={installed_packages.includes(extension.package)?allIonicIcons.radioButtonOnOutline:allIonicIcons.radioButtonOffOutline} />
+					<!-- <ion-icon size="large" icon={installed_packages.includes(extension.package)?allIonicIcons.radioButtonOnOutline:allIonicIcons.radioButtonOffOutline} /> -->
 					{extension.name}</ion-col>
+				<ion-col>
+					{#if extension.installed}
+						<ion-button 
+							on:click={() => { console.log('uninstall extensions not implemented')}} 
+							size="small" fill="outline">{extension.installed}</ion-button>
+						{:else}
+						<ion-button 
+							on:click={() => {run_script(`/cgi-bin/add.sh?${extension.package}`,`Installing package ${extension.package}...`)}} 
+							size="small" fill="outline">Install</ion-button>
+					{/if}
+				</ion-col>
+				<ion-col>					
+					{#if extension.installed}
+						{#if extension.enabled}
+							<ion-button 
+							on:click={() => {run_script(`/cgi-bin/disable_extension.sh?${extension.name}`,`Disabling extension ${extension.name}...`)}} 
+							size="small" fill="outline">Disable</ion-button>
+						{:else}
+							<ion-button 
+							on:click={() => {run_script(`/cgi-bin/enable_extension.sh?${extension.name}`,`Enabling extension ${extension.name}...`)}} 
+							size="small" fill="outline">Enable</ion-button>
+						{/if}
+					{:else}
+						&nbsp;
+					{/if}
+				</ion-col>
 				<ion-col>{extension.package}</ion-col>
 				<ion-col>{extension.size}</ion-col>
 			</ion-row>
@@ -199,3 +272,9 @@
 	<div>Installed Extensions: {JSON.stringify(installed_extensions)}</div>
 	
 </ion-content>
+
+<style>
+	.header_col {
+		font-weight: bold;
+	}
+</style>
