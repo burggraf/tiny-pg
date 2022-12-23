@@ -191,15 +191,23 @@
 						</ion-col>
 						<ion-col size="2" class="ion-text-center">					
 							{#if extension.installed}
-								{#if extension.enabled}
-									<ion-button 
+								<!-- {#if extension.enabled} -->
+								<ion-toggle color="primary" 
+								on:ionChange={() => {
+									if (extension.enabled) 
+									run_script(`/cgi-bin/disable_extension.sh?${extension.name}`,`Disabling extension ${extension.name}...`)
+									else 
+									run_script(`/cgi-bin/enable_extension.sh?${extension.name}`,`Enabling extension ${extension.name}...`)
+								}}
+								checked={extension.enabled}></ion-toggle>
+									<!-- <ion-button 
 									on:click={() => {run_script(`/cgi-bin/disable_extension.sh?${extension.name}`,`Disabling extension ${extension.name}...`)}} 
 									size="small" fill="outline">Disable</ion-button>
 								{:else}
 									<ion-button 
 									on:click={() => {run_script(`/cgi-bin/enable_extension.sh?${extension.name}`,`Enabling extension ${extension.name}...`)}} 
 									size="small" fill="outline">Enable</ion-button>
-								{/if}
+								{/if} -->
 							{:else}
 								&nbsp;
 							{/if}
