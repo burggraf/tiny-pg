@@ -345,8 +345,8 @@ const Menu = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let hideMenu = true;
   let { side = "start" } = $$props;
   const app_version = "0.2.1";
-  const app_menu_title = "Svelte Ionic";
-  const app_menu_subtitle = "SvelteKit + Ionic";
+  const app_menu_title = "tiny-pg";
+  const app_menu_subtitle = "Tiny PostgreSQL";
   const appPages = [
     {
       title: "Profile",

@@ -8,9 +8,12 @@ const css = {
   map: null
 };
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let output = "";
   $$result.css.add(css);
   return `<ion-header><ion-toolbar translucent="${"true"}"><ion-buttons slot="${"start"}"><ion-menu-button></ion-menu-button></ion-buttons>
-		<ion-title>Main Page</ion-title></ion-toolbar></ion-header>
+		<ion-title>${escape(
+    "Install PostgreSQL"
+  )}</ion-title></ion-toolbar></ion-header>
 <ion-content class="${"ion-padding"}"><h3>PostgreSQL: ${escape("Not installed")}</h3>
 
 	${`<ion-button expand="${"block"}" size="${"small"}" fill="${"outline"}">Install PostgreSQL 15</ion-button>
@@ -23,8 +26,8 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
 
 	${``}
 
-	<pre id="${"output"}"></pre>
-	
+	${`<pre>${escape(output)}</pre>`}
+
 </ion-content>`;
 });
 export {

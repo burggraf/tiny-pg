@@ -22,6 +22,8 @@
 	let installed_extensions: any = [];
 	let pg_version: string = '';
 	let extension_search_text: string = '';
+	let display_section = 'log';
+	let output = '';
 	// read extensions from extensions.json
 
 	const get_info = async (script: string) => {
@@ -33,10 +35,7 @@
 		const loader = await loadingBox(message)
 		const response = await fetch(script);
   		const data = await response.text(); // .json();
-		const output = document.getElementById('output');
-		if (output) {
-			output.innerHTML = data;
-		}
+		output = script + '\n\n' + data + '\n\n' + output;
 		loader.dismiss();
 		try {
 			installed_packages = (await get_info('get_installed_packages')).split('\n');
@@ -82,6 +81,7 @@
 	const install_postgres = async (version: string) => {
 		await run_script(`/cgi-bin/postgresql.sh?${version}`,`Installing PostgreSQL ${version}...`);
 		pg_version = (await get_info('get_pg_version')).trim();
+
 	}
 
 	onMount(async () => {
@@ -123,9 +123,27 @@
 
 		<ion-button expand="block" size="small" fill="outline" 
 		on:click={() => {install_postgres("12")}}>Install PostgreSQL 12</ion-button>
+	{:else}
+		<ion-segment value={display_section}
+		on:ionChange={e => {
+			display_section = e.detail.value;
+		}}>
+			<ion-segment-button value="info">
+				<ion-label>Info</ion-label>
+			</ion-segment-button>
+			<ion-segment-button value="log">
+			<ion-label>Log</ion-label>
+			</ion-segment-button>
+			<ion-segment-button value="config">
+				<ion-label>Configuration</ion-label>
+			</ion-segment-button>
+			<ion-segment-button value="extensions">
+			<ion-label>Extensions</ion-label>
+			</ion-segment-button>
+		</ion-segment>	
 	{/if}
 
-	{#if pg_version > ''}
+	{#if pg_version > '' && display_section === 'extensions'}
 
 		<ion-searchbar 
 			placeholder="Search extensions"
@@ -212,8 +230,10 @@
 		</ion-grid>
 	{/if}
 
-	<pre id="output"></pre>
-	
+	{#if display_section === 'log'}
+		<pre>{output}</pre>
+	{/if}
+
 </ion-content>
 
 <style>
