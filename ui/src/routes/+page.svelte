@@ -104,7 +104,7 @@
 		<ion-buttons slot="start">
 			<ion-menu-button />
 		</ion-buttons>
-		<ion-title>Main Page</ion-title>
+		<ion-title>{pg_version === "" ? "Install PostgreSQL" : "Configure PostgreSQL"}</ion-title>
 	</ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">

@@ -406,7 +406,6 @@ const variables = "";
 const Layout = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   setupIonicSvelte({ mode: "ios" });
   pwaStatusStream.subscribe((status) => {
-    console.log("PWA status", status);
     if (status.updateFunction) {
       console.log("PWA updating itself in 4 secs......");
       setTimeout(
