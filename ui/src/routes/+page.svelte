@@ -21,6 +21,7 @@
 	let total_size: number = 0;
 	let installed_extensions: any = [];
 	let pg_version: string = '';
+	let server_type: string = '';
 	let extension_search_text: string = '';
 	let display_section = 'log';
 	let output = '';
@@ -35,11 +36,12 @@
 		const loader = await loadingBox(message)
 		const response = await fetch(script);
   		const data = await response.text(); // .json();
-		output = script + '\n\n' + data + '\n\n' + output;
+		output = message + '\n\n' + data + '\n\n' + output;
 		loader.dismiss();
 		try {
 			installed_packages = (await get_info('get_installed_packages')).split('\n');
 			total_size = parseInt((await get_info('get_installed_packages_total_size')).trim());			
+			server_type = (await get_info('get_server_type')).trim();
 			// set_installed_extensions();
 		} catch (err) {
 			installed_packages = [];
@@ -88,6 +90,7 @@
 		installed_packages = (await get_info('get_installed_packages')).split('\n');
 		total_size = parseInt((await get_info('get_installed_packages_total_size')).trim());
 		pg_version = (await get_info('get_pg_version')).trim();
+		server_type = (await get_info('get_server_type')).trim();
 		if (pg_version > '') {
 			const installed_extensions_output = await get_info('get_extensions');
 			try {
@@ -109,7 +112,7 @@
 </ion-header>
 <ion-content class="ion-padding">
 
-	<h3>PostgreSQL: {pg_version || "Not installed"}</h3>
+	<h3>PostgreSQL: {pg_version ? `${pg_version} ${server_type}` : "Not installed"}</h3>
 
 	{#if pg_version === ''}
 		<ion-button expand="block" size="small" fill="outline" 
@@ -128,9 +131,6 @@
 		on:ionChange={e => {
 			display_section = e.detail.value;
 		}}>
-			<ion-segment-button value="info">
-				<ion-label>Info</ion-label>
-			</ion-segment-button>
 			<ion-segment-button value="log">
 			<ion-label>Log</ion-label>
 			</ion-segment-button>
