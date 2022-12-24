@@ -30,6 +30,7 @@
 	let primary_host = '';
 	let primary_port = '';
 	let show_password = false;
+	let new_server_type = 'STANDALONE';
 
 	const get_info = async (script: string) => {
 		const response = await fetch(`/cgi-bin/${script}.sh`);
@@ -239,6 +240,102 @@
 	{/if}
 
 	{#if pg_version > '' && display_section === 'config'}
+
+	<br/>
+	This {server_type} is currently running PostgreSQL {pg_version}<br/>
+	<br/>
+	Change it to:<br/> 
+	<ion-segment value={new_server_type}
+	on:ionChange={e => {
+		new_server_type = e.detail.value;
+	}}>
+		<ion-segment-button value="STANDALONE">
+		<ion-label>STANDALONE</ion-label>
+		</ion-segment-button>
+		<ion-segment-button value="PRIMARY">
+			<ion-label>PRIMARY</ion-label>
+		</ion-segment-button>
+		<ion-segment-button value="SECONDARY">
+		<ion-label>SECONDARY</ion-label>
+		</ion-segment-button>
+	</ion-segment>	
+
+	<ion-grid class="ion-padding grid375">
+		{#if new_server_type === 'SECONDARY'}
+			<ion-row>
+				<ion-col>
+					<ion-label>Primary Server: IP or Domain</ion-label>
+				</ion-col>
+			</ion-row>
+			<ion-row>
+				<ion-col>
+	
+					<ion-item class="gridItem" lines="none">
+						<ion-input 
+							on:ionChange={e => {primary_host = e.detail.value}}
+							class="inputItemWithIcon"
+							type="text"
+							placeholder="ip address or domain name">
+							<ion-icon class="inputIcon" 
+							icon={allIonicIcons.globeOutline} 
+							slot="start" size="large" color="medium"></ion-icon>
+						</ion-input>		  
+					</ion-item>
+				</ion-col>
+			</ion-row>
+			<ion-row>
+				<ion-col>
+					<ion-label>Primary Server Port</ion-label>
+				</ion-col>
+			</ion-row>
+			<ion-row>
+				<ion-col>
+	
+					<ion-item class="gridItem" lines="none">
+						<ion-input 
+							on:ionChange={e => {primary_port = e.detail.value}}
+							class="inputItemWithIcon"
+							type="text"
+							placeholder="port number, i.e. 5432">
+							<ion-icon class="inputIcon" 
+							icon={allIonicIcons.gitNetworkOutline} 
+							slot="start" size="large" color="medium"></ion-icon>
+						</ion-input>		  
+					</ion-item>
+				</ion-col>
+			</ion-row>
+		{/if}
+
+		{#if new_server_type === 'PRIMARY' || new_server_type === 'SECONDARY'}
+			<ion-row>
+				<ion-col>
+					<ion-label>Replication User (REPUSER) Password</ion-label>
+				</ion-col>
+			</ion-row>
+			<ion-row>
+				<ion-col>
+	
+					<ion-item class="gridItem" lines="none">
+						<ion-input 
+							on:ionChange={e => {repuser_password = e.detail.value}}
+							class="inputItemWithIcon"
+							type={show_password ? "text" : "password"} 
+							placeholder="repuser password">
+							<ion-icon class="inputIcon" 
+							icon={allIonicIcons.lockClosedOutline} 
+							slot="start" size="large" color="medium"></ion-icon>
+						</ion-input>		  
+					</ion-item>
+					<div class="ion-text-center" style="padding-top: 5px;">
+					Show password?
+					<ion-checkbox style="--size: 20px;;margin-left: 5px; --border-radius: 5px;" size="small" color="primary" on:ionChange={() => {show_password = !show_password}}></ion-checkbox>
+					</div>
+				</ion-col>
+			</ion-row>
+		{/if}
+	</ion-grid>
+
+	{#if new_server_type === 'PRIMARY'}
 	<ion-button expand="block" size="small" fill="outline" 
 		on:click={() => {
 			run_script(`/cgi-bin/set_as_physical_primary.sh?${repuser_password}`,
@@ -246,89 +343,28 @@
 		)}}>
 		Set as physical PRIMARY
 	</ion-button>
-
-	<ion-button expand="block" size="small" fill="outline" 
-		on:click={() => {
-			run_script(`/cgi-bin/set_as_physical_secondary.sh?${repuser_password}&${primary_host}&${primary_port}`,
-			"Setting up server as physical SECONDARY"
-		)}}>
-		Set as physical SECONDARY
-	</ion-button>
-
-	<ion-grid class="ion-padding grid375">
-		<ion-row>
-			<ion-col>
-				<ion-label>Primary Server: IP or Domain</ion-label>
-			</ion-col>
-		</ion-row>
-		<ion-row>
-			<ion-col>
-  
-				<ion-item class="gridItem" lines="none">
-					<ion-input 
-						on:ionChange={e => {primary_host = e.detail.value}}
-						class="inputItemWithIcon"
-						type="text"
-						placeholder="ip address or domain name">
-						<ion-icon class="inputIcon" 
-						icon={allIonicIcons.globeOutline} 
-						slot="start" size="large" color="medium"></ion-icon>
-					</ion-input>		  
-				</ion-item>
-			</ion-col>
-		</ion-row>
-
-		<ion-row>
-			<ion-col>
-				<ion-label>Primary Server Port</ion-label>
-			</ion-col>
-		</ion-row>
-		<ion-row>
-			<ion-col>
-  
-				<ion-item class="gridItem" lines="none">
-					<ion-input 
-						on:ionChange={e => {primary_port = e.detail.value}}
-						class="inputItemWithIcon"
-						type="text"
-						placeholder="port number, i.e. 5432">
-						<ion-icon class="inputIcon" 
-						icon={allIonicIcons.gitNetworkOutline} 
-						slot="start" size="large" color="medium"></ion-icon>
-					</ion-input>		  
-				</ion-item>
-			</ion-col>
-		</ion-row>
-
-
-		<ion-row>
-			<ion-col>
-				<ion-label>Replication User (REPUSER) Password</ion-label>
-			</ion-col>
-		</ion-row>
-		<ion-row>
-			<ion-col>
-  
-				<ion-item class="gridItem" lines="none">
-					<ion-input 
-						on:ionChange={e => {repuser_password = e.detail.value}}
-						class="inputItemWithIcon"
-						type={show_password ? "text" : "password"} 
-						placeholder="repuser password">
-						<ion-icon class="inputIcon" 
-						icon={allIonicIcons.lockClosedOutline} 
-						slot="start" size="large" color="medium"></ion-icon>
-					</ion-input>		  
-				</ion-item>
-				<div class="ion-text-center" style="padding-top: 5px;">
-				Show password?
-				<ion-checkbox style="--size: 20px;;margin-left: 5px; --border-radius: 5px;" size="small" color="primary" on:ionChange={() => {show_password = !show_password}}></ion-checkbox>
-				</div>
-			</ion-col>
-		</ion-row>
-	</ion-grid>
-
 	{/if}
+
+	{#if new_server_type === 'SECONDARY'}
+		<ion-button expand="block" size="small" fill="outline" 
+			on:click={() => {
+				run_script(`/cgi-bin/set_as_physical_secondary.sh?${repuser_password}&${primary_host}&${primary_port}`,
+				"Setting up server as physical SECONDARY"
+			)}}>
+			Set as physical SECONDARY
+		</ion-button>
+	{/if}
+
+	{#if new_server_type === 'STANDALONE'}
+		<ion-button expand="block" size="small" fill="outline" 
+			on:click={() => {
+				console.log('NOT IMPLEMENTED YET')
+			}}>
+			Set as STANDALONE server
+		</ion-button>
+	{/if}
+
+{/if}
 
 
 </ion-content>
