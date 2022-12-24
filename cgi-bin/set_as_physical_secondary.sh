@@ -7,13 +7,23 @@ printf "Content-type: text/plain\r\n\r\n"
 # $2: HOST_IP
 # $3: HOST_PORT
 
+# parse $QUERY_STRING
+REPUSER_PASSWORD=`echo $QUERY_STRING | cut -d'&' -f1 | cut -d'=' -f2`
+HOST_IP=`echo $QUERY_STRING | cut -d'&' -f2 | cut -d'=' -f2`
+HOST_PORT=`echo $QUERY_STRING | cut -d'&' -f3 | cut -d'=' -f2`
+
+printf "REPUSER_PASSWORD: $REPUSER_PASSWORD\r\n"
+printf "HOST_IP: $HOST_IP\r\n"
+printf "HOST_PORT: $HOST_PORT\r\n"
+
 printf "Setting server as physical SECONDARY...\r\n"
+
 printf "Stopping PostgreSQL...\r\n"
-/http/cgi-bin/postgresql_control.sh stop
+su postgres -c 'pg_ctl stop -D /var/lib/postgresql/data' > /dev/nul
 printf "Removing old data...\r\n"
 rm -rf /var/lib/postgresql/data/*
 printf "Running pg_basebackup to sync data from primary server...\r\n"
-PGPASSWORD="$1" pg_basebackup -R -h $2 -p $3 -U repuser -D /var/lib/postgresql/data -P
+PGPASSWORD="$REPUSER_PASSWORD" pg_basebackup -R -h $HOST_IP -p $HOST_PORT -U repuser -D /var/lib/postgresql/data -P
 printf "Configuring postgresql.conf...\r\n"
 /http/cgi-bin/add_conf_line.sh /var/lib/postgresql/data/postgresql.conf listen_addresses "'*'"
 /http/cgi-bin/add_conf_line.sh /var/lib/postgresql/data/postgresql.conf hot_standby on
@@ -23,6 +33,12 @@ printf "Configuring postgresql.conf...\r\n"
 /http/cgi-bin/add_conf_line.sh /var/lib/postgresql/data/postgresql.conf wal_keep_size 32
 /http/cgi-bin/add_conf_line.sh /var/lib/postgresql/data/postgresql.conf synchronous_commit off
 /http/cgi-bin/add_conf_line.sh /var/lib/postgresql/data/postgresql.conf synchronous_standby_names "'*'"
+
+printf "Changing owner of /var/lib/postgresql/data to postgres:postgres...\r\n"
+chown -R postgres:postgres /var/lib/postgresql/data
+printf "Changing permissions of /var/lib/postgresql/data to 0700...\r\n"
+chmod 0700 /var/lib/postgresql/data
+
 printf "Starting PostgreSQL...\r\n"
-/http/cgi-bin/postgresql_control.sh start
+su postgres -c 'pg_ctl start -D /var/lib/postgresql/data' > /dev/nul
 echo "Script completed"

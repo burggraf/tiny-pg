@@ -241,7 +241,7 @@
 	{#if pg_version > '' && display_section === 'config'}
 	<ion-button expand="block" size="small" fill="outline" 
 		on:click={() => {
-			run_script("/cgi-bin/set_as_physical_primary.sh",
+			run_script(`/cgi-bin/set_as_physical_primary.sh?${repuser_password}`,
 			"Setting up server as physical PRIMARY"
 		)}}>
 		Set as physical PRIMARY
@@ -249,7 +249,7 @@
 
 	<ion-button expand="block" size="small" fill="outline" 
 		on:click={() => {
-			run_script(`/cgi-bin/set_as_physical_secondary.sh?${repuser_password}&${primary_host}${primary_port}`,
+			run_script(`/cgi-bin/set_as_physical_secondary.sh?${repuser_password}&${primary_host}&${primary_port}`,
 			"Setting up server as physical SECONDARY"
 		)}}>
 		Set as physical SECONDARY
