@@ -26,6 +26,10 @@
 	let display_section = 'log';
 	let output = '';
 	// read extensions from extensions.json
+	let repuser_password = '';
+	let primary_host = '';
+	let primary_port = '';
+	let show_password = false;
 
 	const get_info = async (script: string) => {
 		const response = await fetch(`/cgi-bin/${script}.sh`);
@@ -234,10 +238,121 @@
 		<pre>{output}</pre>
 	{/if}
 
+	{#if pg_version > '' && display_section === 'config'}
+	<ion-button expand="block" size="small" fill="outline" 
+		on:click={() => {
+			run_script("/cgi-bin/set_as_physical_primary.sh",
+			"Setting up server as physical PRIMARY"
+		)}}>
+		Set as physical PRIMARY
+	</ion-button>
+
+	<ion-button expand="block" size="small" fill="outline" 
+		on:click={() => {
+			run_script(`/cgi-bin/set_as_physical_secondary.sh?${repuser_password}&${primary_host}${primary_port}`,
+			"Setting up server as physical SECONDARY"
+		)}}>
+		Set as physical SECONDARY
+	</ion-button>
+
+	<ion-grid class="ion-padding grid375">
+		<ion-row>
+			<ion-col>
+				<ion-label>Primary Server: IP or Domain</ion-label>
+			</ion-col>
+		</ion-row>
+		<ion-row>
+			<ion-col>
+  
+				<ion-item class="gridItem" lines="none">
+					<ion-input 
+						on:ionChange={e => {primary_host = e.detail.value}}
+						class="inputItemWithIcon"
+						type="text"
+						placeholder="ip address or domain name">
+						<ion-icon class="inputIcon" 
+						icon={allIonicIcons.globeOutline} 
+						slot="start" size="large" color="medium"></ion-icon>
+					</ion-input>		  
+				</ion-item>
+			</ion-col>
+		</ion-row>
+
+		<ion-row>
+			<ion-col>
+				<ion-label>Primary Server Port</ion-label>
+			</ion-col>
+		</ion-row>
+		<ion-row>
+			<ion-col>
+  
+				<ion-item class="gridItem" lines="none">
+					<ion-input 
+						on:ionChange={e => {primary_port = e.detail.value}}
+						class="inputItemWithIcon"
+						type="text"
+						placeholder="port number, i.e. 5432">
+						<ion-icon class="inputIcon" 
+						icon={allIonicIcons.gitNetworkOutline} 
+						slot="start" size="large" color="medium"></ion-icon>
+					</ion-input>		  
+				</ion-item>
+			</ion-col>
+		</ion-row>
+
+
+		<ion-row>
+			<ion-col>
+				<ion-label>Replication User (REPUSER) Password</ion-label>
+			</ion-col>
+		</ion-row>
+		<ion-row>
+			<ion-col>
+  
+				<ion-item class="gridItem" lines="none">
+					<ion-input 
+						on:ionChange={e => {repuser_password = e.detail.value}}
+						class="inputItemWithIcon"
+						type={show_password ? "text" : "password"} 
+						placeholder="repuser password">
+						<ion-icon class="inputIcon" 
+						icon={allIonicIcons.lockClosedOutline} 
+						slot="start" size="large" color="medium"></ion-icon>
+					</ion-input>		  
+				</ion-item>
+				<div class="ion-text-center" style="padding-top: 5px;">
+				Show password?
+				<ion-checkbox style="--size: 20px;;margin-left: 5px; --border-radius: 5px;" size="small" color="primary" on:ionChange={() => {show_password = !show_password}}></ion-checkbox>
+				</div>
+			</ion-col>
+		</ion-row>
+	</ion-grid>
+
+	{/if}
+
+
 </ion-content>
 
 <style>
+	.grid375 {
+		max-width: 375px;
+	}
 	.header_col {
 		font-weight: bold;
 	}
+	.inputItemWithIcon {
+		height: 50px;
+		border: 1px solid rgb(212, 212, 212);
+		background-color: var(--ion-background-color) !important;
+		border-radius: 5px;
+	}
+	.inputIcon {
+		padding-right: 10px;
+	}
+	.gridItem {
+		--padding-start: 0px;
+		--padding-end: 0px;
+		--inner-padding-end: 0px;
+	}
+
 </style>

@@ -17,7 +17,7 @@ chown postgres:postgres /var/lib/postgresql/data
 su postgres -c 'initdb -D /var/lib/postgresql/data' > /dev/nul
 echo "host all all 0.0.0.0/0 md5" >> /var/lib/postgresql/data/pg_hba.conf
 echo "host replication repuser 0.0.0.0/0 md5" >> /var/lib/postgresql/data/pg_hba.conf
-echo "listen_addresses='*'" >> /var/lib/postgresql/data/postgresql.conf
+echo "listen_addresses = '*'" >> /var/lib/postgresql/data/postgresql.conf
 #echo "wal_level = replica" >> /var/lib/postgresql/data/postgresql.conf
 #echo "max_wal_senders = 10" >> /var/lib/postgresql/data/postgresql.conf
 #echo "wal_keep_size = 32" >> /var/lib/postgresql/data/postgresql.conf
