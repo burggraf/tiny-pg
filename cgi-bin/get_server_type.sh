@@ -10,14 +10,12 @@ CONF=`cat /var/lib/postgresql/data/postgresql.conf | sed 's/#.*$//g' | sed 's/^\
 if echo "$CONF" | grep -q "primary_conninfo='host"; then
     TYPE="SECONDARY"
 else
-    if echo "$CONF" | grep -q "host replication repuser"; then
+    if echo "$CONF" | grep -q "synchronous_standby_names"; then
         TYPE="PRIMARY"
     else
         TYPE="STANDALONE"
     fi
 fi
-
-
 
 printf "$TYPE"
 
