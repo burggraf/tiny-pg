@@ -125,6 +125,7 @@
 		// }
 	})
 	const load_server = async () => {
+		console.log('load_server', $server)
 		installed_packages = (await get_info('get_installed_packages')).split('\n')
 		total_size = parseInt((await get_info('get_installed_packages_total_size')).trim())
 		pg_version = (await get_info('get_pg_version')).trim()
@@ -151,6 +152,16 @@
 		}
 
 	}
+	const delete_server = () => {
+		if ($server) {
+			remove_server($server);
+			if ($servers.length > 0) {
+				set_active_server($servers[0]);
+			} else {
+				new_server();
+			}
+		}
+	}
 </script>
 
 <ion-header>
@@ -158,11 +169,22 @@
 		<ion-buttons slot="start">
 			<ion-menu-button />
 		</ion-buttons>
-		<ion-title>{pg_version === '' ? 'Install PostgreSQL' : 'Configure PostgreSQL'}</ion-title>
+		<ion-title>{local_server? 'Add New Server' : ($server.title === '' ? 'Server' : $server.title)}</ion-title>
 		<ion-buttons slot="end">
-            <ion-button fill="clear" size="large" on:click={new_server} >
-                <ion-icon slot="icon-only" icon={allIonicIcons.addOutline} />
-            </ion-button>
+			{#if local_server}
+				<ion-button fill="clear" size="large" on:click={() => {
+					local_server = undefined;
+				}}>
+					<ion-icon slot="icon-only" icon={allIonicIcons.closeOutline} />
+				</ion-button>
+			{:else}
+				<ion-button fill="clear" size="large" on:click={delete_server} >
+					<ion-icon slot="icon-only" icon={allIonicIcons.trashOutline} />
+				</ion-button>
+				<ion-button fill="clear" size="large" on:click={new_server} >
+					<ion-icon slot="icon-only" icon={allIonicIcons.addOutline} />
+				</ion-button>
+			{/if}
 		</ion-buttons>
 	</ion-toolbar>
 </ion-header>
@@ -181,7 +203,7 @@
 					}}
 					class="inputItemWithIcon"
 					type="text"
-					value={$server.url}
+					value={local_server.url}
 					placeholder="URL of database server"
 				>
 					<ion-icon
@@ -206,7 +228,7 @@
 					}}
 					class="inputItemWithIcon"
 					type="text"
-					value={$server.title}
+					value={local_server.title}
 					placeholder="name of database server"
 				>
 					<ion-icon
@@ -235,7 +257,7 @@
 	{/if}
 
 	<!-- SERVER START -->
-	{#if $server.url !== ''}
+	{#if $server.url !== '' && !local_server} 
 		<h3>PostgreSQL: {pg_version ? `${pg_version} ${server_type}` : 'Not installed'}</h3>
 
 		<ion-button on:click={post_test}>post_test</ion-button>
