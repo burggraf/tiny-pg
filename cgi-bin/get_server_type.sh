@@ -7,7 +7,7 @@ printf "Content-type: text/plain\r\n\r\n"
 CONF=`cat /var/lib/postgresql/data/postgresql.conf | sed 's/#.*$//g' | sed 's/^\s*$//g' | sed '/^$/d'`
 
 # see if CONF contains primary_conninfo='host
-if echo "$CONF" | grep -q "primary_conninfo='host"; then
+if echo "$CONF" | grep -q "primary_conninfo = 'host"; then
     TYPE="SECONDARY"
 else
     if echo "$CONF" | grep -q "synchronous_standby_names"; then

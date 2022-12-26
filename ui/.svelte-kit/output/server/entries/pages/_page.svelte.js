@@ -16,6 +16,9 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   )}</ion-title></ion-toolbar></ion-header>
 <ion-content class="${"ion-padding"}"><h3>PostgreSQL: ${escape("Not installed")}</h3>
 
+	<ion-button>post_test</ion-button>
+	<br>
+
 	${`<ion-button expand="${"block"}" size="${"small"}" fill="${"outline"}">Install PostgreSQL 15</ion-button>
 
 		<ion-button expand="${"block"}" size="${"small"}" fill="${"outline"}">Install PostgreSQL 14</ion-button>
