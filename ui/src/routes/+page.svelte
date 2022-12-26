@@ -4,6 +4,8 @@
 	import { onMount } from 'svelte'
 	import extensions_list from './extensions.json'
 	import * as allIonicIcons from 'ionicons/icons'
+	import { servers, server, add_server, remove_server, update_server, set_active_server, get_active_server } from '$stores/servers.store'
+	import type { Server } from '$stores/servers.store'
 
 	// create an interface for the extensions.json file
 	interface Extension {
@@ -15,8 +17,9 @@
 		enabled?: boolean
 	}
 	const extensions: Extension[] = extensions_list
-	let base = ''
+	let local_server: Server | undefined;
 	let server_address = ''
+	let server_title = ''
 	// goto('/components/Splash');
 	let installed_packages: any = []
 	let total_size: number = 0
@@ -34,14 +37,14 @@
 	let new_server_type = 'STANDALONE'
 
 	const get_info = async (script: string) => {
-		const response = await fetch(`${base}/cgi-bin/${script}.sh`)
+		const response = await fetch(`${$server.url}/cgi-bin/${script}.sh`)
 		const data = await response.text() // .json();
 		return data
 	}
 
 	const post_test = async () => {
 		console.log('post_test...')
-		const response = await fetch(`${base}/cgi-bin/post_test.sh`, {
+		const response = await fetch(`${$server.url}/cgi-bin/post_test.sh`, {
 			method: 'POST',
 			headers: {
 				//'Content-Type': 'application/json'
@@ -108,16 +111,18 @@
 	}
 	const install_postgres = async (version: string) => {
 		await run_script(
-			`${base}/cgi-bin/postgresql.sh?${version}`,
+			`${$server.url}/cgi-bin/postgresql.sh?${version}`,
 			`Installing PostgreSQL ${version}...`
 		)
 		pg_version = (await get_info('get_pg_version')).trim()
 	}
 
+	$: $server, load_server();
+
 	onMount(() => {
-		if (base !== '') {
-			load_server()
-		}
+		// if ($server.url) {
+		// 	load_server();
+		// }
 	})
 	const load_server = async () => {
 		installed_packages = (await get_info('get_installed_packages')).split('\n')
@@ -134,6 +139,18 @@
 			reload()
 		}
 	}
+	const new_server = () => {
+		local_server = { url:'', title: '', active: false }
+	}
+	const save_new_server = () => {
+		if (local_server && local_server.url !== '' && local_server.title !== '') {
+			add_server(local_server);
+			set_active_server(local_server);
+			load_server();
+			local_server = undefined;
+		}
+
+	}
 </script>
 
 <ion-header>
@@ -142,9 +159,15 @@
 			<ion-menu-button />
 		</ion-buttons>
 		<ion-title>{pg_version === '' ? 'Install PostgreSQL' : 'Configure PostgreSQL'}</ion-title>
+		<ion-buttons slot="end">
+            <ion-button fill="clear" size="large" on:click={new_server} >
+                <ion-icon slot="icon-only" icon={allIonicIcons.addOutline} />
+            </ion-button>
+		</ion-buttons>
 	</ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
+	{#if local_server}
 	<ion-grid class="ion-padding grid375">
 		<ion-row>
 			<ion-col>Host URL</ion-col>
@@ -153,16 +176,42 @@
 			<ion-col>
 				<ion-input
 					on:ionChange={(e) => {
-						server_address = e.detail.value
+						if (local_server)
+							local_server.url = e.detail.value
 					}}
 					class="inputItemWithIcon"
 					type="text"
-					value={base}
+					value={$server.url}
 					placeholder="URL of database server"
 				>
 					<ion-icon
 						class="inputIcon"
 						icon={allIonicIcons.globeOutline}
+						slot="start"
+						size="large"
+						color="medium"
+					/>
+				</ion-input>
+			</ion-col>
+		</ion-row>
+		<ion-row>
+			<ion-col>Server Title</ion-col>
+		</ion-row>
+		<ion-row>
+			<ion-col>
+				<ion-input
+					on:ionChange={(e) => {
+						if (local_server)
+							local_server.title = e.detail.value
+					}}
+					class="inputItemWithIcon"
+					type="text"
+					value={$server.title}
+					placeholder="name of database server"
+				>
+					<ion-icon
+						class="inputIcon"
+						icon={allIonicIcons.textOutline}
 						slot="start"
 						size="large"
 						color="medium"
@@ -177,16 +226,16 @@
 					size="large"
 					fill="solid"
 					on:click={() => {
-						base = server_address
-						load_server()
+						save_new_server();
 					}}>Load Server</ion-button
 				>
 			</ion-col>
 		</ion-row>
 	</ion-grid>
+	{/if}
 
 	<!-- SERVER START -->
-	{#if base !== ''}
+	{#if $server.url !== ''}
 		<h3>PostgreSQL: {pg_version ? `${pg_version} ${server_type}` : 'Not installed'}</h3>
 
 		<ion-button on:click={post_test}>post_test</ion-button>
@@ -195,8 +244,8 @@
 		{#if pg_version === ''}
 			<ion-button
 				expand="block"
-				size="small"
-				fill="outline"
+				size="large"
+				fill="solid"
 				on:click={() => {
 					install_postgres('15')
 				}}>Install PostgreSQL 15</ion-button
@@ -204,8 +253,8 @@
 
 			<ion-button
 				expand="block"
-				size="small"
-				fill="outline"
+				size="large"
+				fill="solid"
 				on:click={() => {
 					install_postgres('14')
 				}}>Install PostgreSQL 14</ion-button
@@ -213,8 +262,8 @@
 
 			<ion-button
 				expand="block"
-				size="small"
-				fill="outline"
+				size="large"
+				fill="solid"
 				on:click={() => {
 					install_postgres('13')
 				}}>Install PostgreSQL 13</ion-button
@@ -222,8 +271,8 @@
 
 			<ion-button
 				expand="block"
-				size="small"
-				fill="outline"
+				size="large"
+				fill="solid"
 				on:click={() => {
 					install_postgres('12')
 				}}>Install PostgreSQL 12</ion-button
@@ -314,7 +363,7 @@
 									<ion-button
 										on:click={() => {
 											run_script(
-												`${base}/cgi-bin/add.sh?${extension.package}`,
+												`${$server.url}/cgi-bin/add.sh?${extension.package}`,
 												`Installing package ${extension.package}...`
 											)
 										}}
@@ -330,12 +379,12 @@
 										on:ionChange={() => {
 											if (extension.enabled)
 												run_script(
-													`${base}/cgi-bin/disable_extension.sh?${extension.name}`,
+													`${$server.url}/cgi-bin/disable_extension.sh?${extension.name}`,
 													`Disabling extension ${extension.name}...`
 												)
 											else
 												run_script(
-													`${base}/cgi-bin/enable_extension.sh?${extension.name}`,
+													`${$server.url}/cgi-bin/enable_extension.sh?${extension.name}`,
 													`Enabling extension ${extension.name}...`
 												)
 										}}
@@ -487,7 +536,7 @@
 					fill="outline"
 					on:click={() => {
 						run_script(
-							`${base}/cgi-bin/set_as_physical_primary.sh?${repuser_password}`,
+							`${$server.url}/cgi-bin/set_as_physical_primary.sh?${repuser_password}`,
 							'Setting up server as physical PRIMARY'
 						)
 					}}
@@ -503,7 +552,7 @@
 					fill="outline"
 					on:click={() => {
 						run_script(
-							`${base}/cgi-bin/set_as_physical_secondary.sh?${repuser_password}&${primary_host}&${primary_port}`,
+							`${$server.url}/cgi-bin/set_as_physical_secondary.sh?${repuser_password}&${primary_host}&${primary_port}`,
 							'Setting up server as physical SECONDARY'
 						)
 					}}

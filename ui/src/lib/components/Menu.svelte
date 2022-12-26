@@ -14,6 +14,7 @@
 	let hideMenu = true; // a hack because the menu shows before the splash (in Chrome on Windows)
 	export let side = 'start';
 	import { showConfirm } from '$services/alert'
+	import { servers, set_active_server } from '$stores/servers.store'
 
 	// ** get package info
 	const app_version = __APP_VERSION__;
@@ -107,6 +108,23 @@
 				{app_menu_subtitle}
 			</p>
 			<ion-list>
+
+				{#each $servers as server, i}
+					<ion-menu-toggle auto-hide="false">
+						<ion-item
+							routerDirection="root"
+							on:click={() => {
+								set_active_server(server);
+							}}
+							lines="none"
+							detail="false"
+							class={''}
+						>
+							<ion-icon slot="start" icon={allIonicIcons.serverOutline}></ion-icon>
+							<ion-label>{server.title}</ion-label>
+						</ion-item>
+					</ion-menu-toggle>
+				{/each}
 
 				{#each appPages as p, i}
 					{#if !p.requireLogin }
