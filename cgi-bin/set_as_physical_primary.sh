@@ -6,6 +6,8 @@ printf "Content-type: text/plain\r\n\r\n"
 # get post data
 RAW_DATA="$(cat)"
 DATA=$(echo -n "$RAW_DATA" | head -1 | tr -d '\r\n');
+# convert ' to '' for psql
+DATA=`echo $DATA | sed "s/'/''/g"`
 
 printf "Setting server as physical PRIMARY...\r\n"
 printf "configuring /var/lib/postgresql/postgresql.conf...\r\n"

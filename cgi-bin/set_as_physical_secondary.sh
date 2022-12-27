@@ -10,7 +10,7 @@ printf "Content-type: text/plain\r\n\r\n"
 RAW_DATA="$(cat)"
 DATA=$(echo -n "$RAW_DATA" | head -1 | tr -d '\r\n');
 
-# parse $QUERY_STRING
+# parse posted $DATA
 REPUSER_PASSWORD=`echo $DATA | cut -d'&' -f1 | cut -d'=' -f2`
 HOST_IP=`echo $DATA | cut -d'&' -f2 | cut -d'=' -f2`
 HOST_PORT=`echo $DATA | cut -d'&' -f3 | cut -d'=' -f2`

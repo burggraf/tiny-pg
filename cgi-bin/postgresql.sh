@@ -7,11 +7,16 @@ printf "Content-type: text/plain\r\n\r\n"
 RAW_DATA="$(cat)"
 DATA=$(echo -n "$RAW_DATA" | head -1 | tr -d '\r\n');
 
-printf "Query string is $DATA\r\n"
-printf "Installing PostgreSQL $DATA...\r\n"
+# parse posted $DATA
+VERSION=`echo $DATA | cut -d'&' -f1 | cut -d'=' -f2`
+POSTGRES_PASSWORD=`echo $DATA | cut -d'&' -f2 | cut -d'=' -f2`
+# convert ' to '' for psql
+POSTGRES_PASSWORD=`echo $POSTGRES_PASSWORD | sed "s/'/''/g"`
+
+printf "Installing PostgreSQL $VERSION...\r\n"
 
 apk update
-apk add postgresql$DATA
+apk add postgresql$VERSION
 mkdir -p /run/postgresql
 chown postgres:postgres /run/postgresql/
 mkdir -p /var/lib/postgresql/data
@@ -31,5 +36,7 @@ su postgres -c 'pg_ctl start -D /var/lib/postgresql/data' > /dev/nul
 #psql -U postgres -c "create role repuser with password '$REPUSER_PASSWORD' replication login;"
 printf "PostgreSQL 15 installed and started\r\n"
 echo ""
+printf "setting postgres password...\r\n"
+psql -U postgres -c "alter role postgres with password '$POSTGRES_PASSWORD';"
 echo ""
 echo "Script completed"
