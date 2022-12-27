@@ -3,16 +3,19 @@ printf "HTTP/1.0 200 OK\r\n"
 printf "Content-type: text/plain\r\n\r\n"
 
 #printenv | grep ^HTTP_ 
+# get post data
+RAW_DATA="$(cat)"
+DATA=$(echo -n "$RAW_DATA" | head -1 | tr -d '\r\n');
 
-printf "PostgreSQL $QUERY_STRING...\r\n"
+printf "PostgreSQL $DATA...\r\n"
 
-if [ "$QUERY_STRING" = "start" ]; then
+if [ "$DATA" = "start" ]; then
     su postgres -c 'pg_ctl start -D /var/lib/postgresql/data' > /dev/nul
 fi
-if [ "$QUERY_STRING" = "stop" ]; then
+if [ "$DATA" = "stop" ]; then
     su postgres -c 'pg_ctl stop -D /var/lib/postgresql/data' > /dev/nul
 fi
-if [ "$QUERY_STRING" = "restart" ]; then
+if [ "$DATA" = "restart" ]; then
     su postgres -c 'pg_ctl restart -D /var/lib/postgresql/data' > /dev/nul
 fi
 

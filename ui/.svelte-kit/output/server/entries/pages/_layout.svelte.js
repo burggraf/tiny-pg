@@ -2,7 +2,7 @@ import { c as create_ssr_component, a as subscribe, d as add_attribute, e as esc
 import { d as derived, r as readable, w as writable } from "../../chunks/index2.js";
 import { p as page } from "../../chunks/stores.js";
 import { isPlatform } from "@ionic/core";
-import "../../chunks/platform.js";
+import { s as servers } from "../../chunks/servers.store.js";
 import * as allIonicIcons from "ionicons/icons";
 import { initialize } from "@ionic/core/components";
 import { IonAccordion } from "@ionic/core/components/ion-accordion.js";
@@ -335,10 +335,12 @@ const css = {
 };
 const Menu = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $isOnline, $$unsubscribe_isOnline;
+  let $servers, $$unsubscribe_servers;
   let $page, $$unsubscribe_page;
   let $canInstall, $$unsubscribe_canInstall;
   let $$unsubscribe_pwaBeforeInstallPrompt;
   $$unsubscribe_isOnline = subscribe(isOnline, (value) => $isOnline = value);
+  $$unsubscribe_servers = subscribe(servers, (value) => $servers = value);
   $$unsubscribe_page = subscribe(page, (value) => $page = value);
   $$unsubscribe_canInstall = subscribe(canInstall, (value) => $canInstall = value);
   $$unsubscribe_pwaBeforeInstallPrompt = subscribe(pwaBeforeInstallPrompt, (value) => value);
@@ -378,12 +380,19 @@ const Menu = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     $$bindings.side(side);
   $$result.css.add(css);
   $$unsubscribe_isOnline();
+  $$unsubscribe_servers();
   $$unsubscribe_page();
   $$unsubscribe_canInstall();
   $$unsubscribe_pwaBeforeInstallPrompt();
   return `<ion-menu${add_attribute("side", side, 0)} content-id="${"main"}" menu-id="${"mainmenu"}" class="${["svelte-yyl7vi", hideMenu ? "menuhide" : ""].join(" ").trim()}"><ion-header><ion-toolbar translucent="${"true"}"><ion-title>${escape(app_menu_title)}</ion-title></ion-toolbar></ion-header>
 		<ion-content class="${" svelte-yyl7vi"}"><p class="${"menu_subtitle svelte-yyl7vi"}">${escape(app_menu_subtitle)}</p>
-			<ion-list>${each(appPages, (p, i) => {
+			<ion-list>${each($servers, (server, i) => {
+    return `<ion-menu-toggle auto-hide="${"false"}"><ion-item routerdirection="${"root"}" lines="${"none"}" detail="${"false"}" class="${escape(null_to_empty(""), true) + " svelte-yyl7vi"}"><ion-icon slot="${"start"}"${add_attribute("icon", allIonicIcons.serverOutline, 0)}></ion-icon>
+							<ion-label>${escape(server.title)}</ion-label></ion-item>
+					</ion-menu-toggle>`;
+  })}
+
+				${each(appPages, (p, i) => {
     return `${!p.requireLogin ? `<ion-menu-toggle auto-hide="${"false"}"><ion-item routerdirection="${"root"}" lines="${"none"}" detail="${"false"}" class="${escape(null_to_empty($page.route?.id === p.url ? "active-item" : ""), true) + " svelte-yyl7vi"}">
 								<ion-icon slot="${"start"}"${add_attribute("icon", p.icon, 0)}></ion-icon>
 								<ion-label>${escape(p.title)}</ion-label></ion-item>

@@ -62,9 +62,17 @@
 		output = data + '\n\n' + output
 	}
 
-	const run_script = async (script: string, message: string) => {
+	const run_script = async (script: string, payload: string, message: string) => {
 		const loader = await loadingBox(message)
-		const response = await fetch(script)
+
+		const response = await fetch(script, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'text/plain',
+			},
+			body: payload,
+		})
+		//const response = await fetch(script)
 		const data = await response.text() // .json();
 		output = message + '\n\n' + data + '\n\n' + output
 		loader.dismiss()
@@ -111,7 +119,8 @@
 	}
 	const install_postgres = async (version: string) => {
 		await run_script(
-			`${$server.url}/cgi-bin/postgresql.sh?${version}`,
+			`${$server.url}/cgi-bin/postgresql.sh`,
+			`${version}`,
 			`Installing PostgreSQL ${version}...`
 		)
 		pg_version = (await get_info('get_pg_version')).trim()
@@ -385,7 +394,8 @@
 									<ion-button
 										on:click={() => {
 											run_script(
-												`${$server.url}/cgi-bin/add.sh?${extension.package}`,
+												`${$server.url}/cgi-bin/add.sh`,
+												`${extension.package}`,
 												`Installing package ${extension.package}...`
 											)
 										}}
@@ -401,12 +411,14 @@
 										on:ionChange={() => {
 											if (extension.enabled)
 												run_script(
-													`${$server.url}/cgi-bin/disable_extension.sh?${extension.name}`,
+													`${$server.url}/cgi-bin/disable_extension.sh`,
+													`${extension.name}`,
 													`Disabling extension ${extension.name}...`
 												)
 											else
 												run_script(
-													`${$server.url}/cgi-bin/enable_extension.sh?${extension.name}`,
+													`${$server.url}/cgi-bin/enable_extension.sh`,
+													`${extension.name}`,
 													`Enabling extension ${extension.name}...`
 												)
 										}}
@@ -558,7 +570,8 @@
 					fill="outline"
 					on:click={() => {
 						run_script(
-							`${$server.url}/cgi-bin/set_as_physical_primary.sh?${repuser_password}`,
+							`${$server.url}/cgi-bin/set_as_physical_primary.sh`,
+							`${repuser_password}`,
 							'Setting up server as physical PRIMARY'
 						)
 					}}
@@ -574,7 +587,8 @@
 					fill="outline"
 					on:click={() => {
 						run_script(
-							`${$server.url}/cgi-bin/set_as_physical_secondary.sh?${repuser_password}&${primary_host}&${primary_port}`,
+							`${$server.url}/cgi-bin/set_as_physical_secondary.sh`,
+							`${repuser_password}&${primary_host}&${primary_port}`,
 							'Setting up server as physical SECONDARY'
 						)
 					}}

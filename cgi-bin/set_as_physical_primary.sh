@@ -3,6 +3,9 @@ printf "HTTP/1.0 200 OK\r\n"
 printf "Content-type: text/plain\r\n\r\n"
 
 #printenv | grep ^HTTP_ 
+# get post data
+RAW_DATA="$(cat)"
+DATA=$(echo -n "$RAW_DATA" | head -1 | tr -d '\r\n');
 
 printf "Setting server as physical PRIMARY...\r\n"
 printf "configuring /var/lib/postgresql/postgresql.conf...\r\n"
@@ -22,7 +25,7 @@ printf "synchronous_standby_names = '*'\r\n"
 #printf "setting postgres password...\r\n"
 #psql -U postgres -c "alter role postgres with password '$POSTGRES_PASSWORD'"
 printf "setting repuser password...\r\n"
-psql -U postgres -c "create role repuser with password '$QUERY_STRING' replication login;"
+psql -U postgres -c "create role repuser with password '$DATA' replication login;"
 
 
 echo "Script completed"

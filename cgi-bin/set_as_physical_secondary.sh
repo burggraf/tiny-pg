@@ -6,11 +6,14 @@ printf "Content-type: text/plain\r\n\r\n"
 # $1: REPUSER_PASSWORD
 # $2: HOST_IP
 # $3: HOST_PORT
+# get post data
+RAW_DATA="$(cat)"
+DATA=$(echo -n "$RAW_DATA" | head -1 | tr -d '\r\n');
 
 # parse $QUERY_STRING
-REPUSER_PASSWORD=`echo $QUERY_STRING | cut -d'&' -f1 | cut -d'=' -f2`
-HOST_IP=`echo $QUERY_STRING | cut -d'&' -f2 | cut -d'=' -f2`
-HOST_PORT=`echo $QUERY_STRING | cut -d'&' -f3 | cut -d'=' -f2`
+REPUSER_PASSWORD=`echo $DATA | cut -d'&' -f1 | cut -d'=' -f2`
+HOST_IP=`echo $DATA | cut -d'&' -f2 | cut -d'=' -f2`
+HOST_PORT=`echo $DATA | cut -d'&' -f3 | cut -d'=' -f2`
 
 printf "REPUSER_PASSWORD: $REPUSER_PASSWORD\r\n"
 printf "HOST_IP: $HOST_IP\r\n"

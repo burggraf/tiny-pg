@@ -3,12 +3,15 @@ printf "HTTP/1.0 200 OK\r\n"
 printf "Content-type: text/plain\r\n\r\n"
 
 #printenv | grep ^HTTP_ 
+# get post data
+RAW_DATA="$(cat)"
+DATA=$(echo -n "$RAW_DATA" | head -1 | tr -d '\r\n');
 
-printf "Query string is $QUERY_STRING\r\n"
-printf "Installing PostgreSQL $QUERY_STRING...\r\n"
+printf "Query string is $DATA\r\n"
+printf "Installing PostgreSQL $DATA...\r\n"
 
 apk update
-apk add postgresql$QUERY_STRING
+apk add postgresql$DATA
 mkdir -p /run/postgresql
 chown postgres:postgres /run/postgresql/
 mkdir -p /var/lib/postgresql/data
