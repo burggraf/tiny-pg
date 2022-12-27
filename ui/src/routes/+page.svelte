@@ -6,6 +6,7 @@
 	import * as allIonicIcons from 'ionicons/icons'
 	import { servers, server, add_server, remove_server, update_server, set_active_server, get_active_server } from '$stores/servers.store'
 	import type { Server } from '$stores/servers.store'
+  import { toast } from '$services/toast'
 
 	// create an interface for the extensions.json file
 	interface Extension {
@@ -31,6 +32,7 @@
 	let output = ''
 	// read extensions from extensions.json
 	let repuser_password = ''
+	let postgres_password = ''
 	let primary_host = ''
 	let primary_port = ''
 	let show_password = false
@@ -98,9 +100,13 @@
 		}
 	}
 	const install_postgres = async (version: string) => {
+		if (postgres_password.trim().length < 6) {
+			toast('Please enter a password of at least 6 characters for the postgres user')
+			return
+		}
 		await run_script(
 			`${$server.url}/cgi-bin/postgresql.sh`,
-			`${version}`,
+			`${version}&${postgres_password}`,
 			`Installing PostgreSQL ${version}...`
 		)
 		pg_version = (await get_info('get_pg_version')).trim()
@@ -285,6 +291,46 @@
 					install_postgres('12')
 				}}>Install PostgreSQL 12</ion-button
 			>
+			<ion-grid class="grid375">
+			<ion-row>
+				<ion-col>
+					<ion-label>Postgres User Password</ion-label>
+				</ion-col>
+			</ion-row>
+			<ion-row>
+				<ion-col>
+					<ion-item class="gridItem" lines="none">
+						<ion-input
+							on:ionChange={(e) => {
+								postgres_password = e.detail.value
+							}}
+							class="inputItemWithIcon"
+							type={show_password ? 'text' : 'password'}
+							placeholder="postgres password"
+						>
+							<ion-icon
+								class="inputIcon"
+								icon={allIonicIcons.lockClosedOutline}
+								slot="start"
+								size="large"
+								color="medium"
+							/>
+						</ion-input>
+					</ion-item>
+					<div class="ion-text-center" style="padding-top: 5px;">
+						Show password?
+						<ion-checkbox
+							style="--size: 20px;;margin-left: 5px; --border-radius: 5px;"
+							size="small"
+							color="primary"
+							on:ionChange={() => {
+								show_password = !show_password
+							}}
+						/>
+					</div>
+				</ion-col>
+			</ion-row>
+			</ion-grid>
 		{:else}
 			<ion-segment
 				value={display_section}
