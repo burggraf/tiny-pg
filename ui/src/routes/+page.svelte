@@ -42,26 +42,6 @@
 		return data
 	}
 
-	const post_test = async () => {
-		console.log('post_test...')
-		const response = await fetch(`${$server.url}/cgi-bin/post_test.sh`, {
-			method: 'POST',
-			headers: {
-				//'Content-Type': 'application/json'
-				'Content-Type': 'text/plain',
-			},
-			// body: 'aaa=aaa&bbb=1&ccc=true'
-			body: JSON.stringify({
-				aaa: 'aaa',
-				bbb: 1,
-				ccc: true,
-				ddd: { thing: 'abc' },
-			}),
-		})
-		const data = await response.text() // .json();
-		output = data + '\n\n' + output
-	}
-
 	const run_script = async (script: string, payload: string, message: string) => {
 		const loader = await loadingBox(message)
 
@@ -268,9 +248,6 @@
 	<!-- SERVER START -->
 	{#if $server.url !== '' && !local_server} 
 		<h3>PostgreSQL: {pg_version ? `${pg_version} ${server_type}` : 'Not installed'}</h3>
-
-		<ion-button on:click={post_test}>post_test</ion-button>
-		<br />
 
 		{#if pg_version === ''}
 			<ion-button
